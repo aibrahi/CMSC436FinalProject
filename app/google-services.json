@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "110936905538",
+    "firebase_url": "https://cmsc436finalproject.firebaseio.com",
+    "project_id": "cmsc436finalproject",
+    "storage_bucket": "cmsc436finalproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110936905538:android:78914675cf24521f",
+        "android_client_info": {
+          "package_name": "umd.cmsc436.cmsc436finalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110936905538-hbhhn9uv9fuabnkf23lc9luc6t4qd0cf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "umd.cmsc436.cmsc436finalproject",
+            "certificate_hash": "0b5d5e828d31cd7baba756fdfe41527c9172251e"
+          }
+        },
+        {
+          "client_id": "110936905538-ap828urm4a1bifn4ctjuab17ef8dp13n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF9sY0lwfwchCkiUmIx6esWGccVaMdSuw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110936905538-ap828urm4a1bifn4ctjuab17ef8dp13n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

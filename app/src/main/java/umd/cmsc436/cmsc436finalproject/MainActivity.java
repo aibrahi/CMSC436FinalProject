@@ -1,11 +1,15 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -114,34 +118,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Messages messages = dataSnapshot.getValue(Messages.class);
-                mMessageAdapter.add(messages);
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -149,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-
                 if(user != null){
                     // user is signed in
                     Toast.makeText(MainActivity.this, "Your are now signed in", Toast.LENGTH_SHORT).show();
-                    mUsername = user.getDisplayName().toString();
+                    onSignedInInitialize(user.getDisplayName());
+
                 }else{
                     // user is signed out
-
+                    onSignedOutClean();
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
@@ -171,15 +148,106 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void onSignedOutClean() {
+        mUsername = ANONYMOUS;
+        mMessageAdapter.clear();
+        if(mChildEventListener != null){
+
+            // Stops reading from Firebase
+            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+
+
+    }
+
+    private void onSignedInInitialize(String username) {
+        mUsername = username;
+
+
+        if(mChildEventListener == null){
+
+            // reads from Firebase database and displays messages
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Messages messages = dataSnapshot.getValue(Messages.class);
+                    mMessageAdapter.add(messages);
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            };
+            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        switch (item.getItemId()){
+            case R.id.logout:
+                // sign out
+                AuthUI.getInstance().signOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.logout_menu, menu);
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if( requestCode == RC_SIGN_IN){
+            if(resultCode == RESULT_OK){
+                Toast.makeText(MainActivity.this, "Signed in", Toast.LENGTH_LONG).show();
+            }else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(MainActivity.this, "Signed in cancelled", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
+        if(mChildEventListener != null){
+
+            // Stops reading from Firebase
+            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
+            mChildEventListener = null;
+        }
+        mMessageAdapter.clear();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthListener);
+
+
     }
 }
