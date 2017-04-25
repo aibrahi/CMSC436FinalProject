@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CMSC436 Final Project</string>
+    <string name="save_label">Save</string>
+    <string name="cancel_label">Cancel</string>
 </resources>
