@@ -22,6 +22,8 @@
         <activity android:name=".ListOfUsers">
         </activity>
 
+        <activity android:name=".FragmentViewer"></activity>
+
 
     </application>
 
