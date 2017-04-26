@@ -2,4 +2,6 @@
     <string name="app_name">CMSC436 Final Project</string>
     <string name="save_label">Save</string>
     <string name="cancel_label">Cancel</string>
+    <string name="chat_label">Chats</string>
+    <string name="bills_label">Bills</string>
 </resources>

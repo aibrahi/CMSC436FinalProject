@@ -49,6 +49,8 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
 
         //CREATE ITEMS
 
+        AHBottomNavigationItem chatItem = new AHBottomNavigationItem(R.string.chat_label, R.drawable.ic_supervisor_account_black_24dp, R.color.colorAccent);
+        AHBottomNavigationItem billItem = new AHBottomNavigationItem(R.string.bills_label, R.drawable.ic_attach_money_black_24dp, R.color.colorAccent);
         //AHBottomNavigationItem homeItem = new AHBottomNavigationItem(R.string.home, R.drawable.home_icon, R.color.colorAccent);
         //AHBottomNavigationItem generalItem=new AHBottomNavigationItem(R.string.general, R.drawable.graph_icon, R.color.colorAccent);
         //AHBottomNavigationItem fitnessItem=new AHBottomNavigationItem(R.string.fitness,R.drawable.run_icon, R.color.colorAccent);
@@ -56,6 +58,8 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
 
         //ADD THEM to bar
 
+        bottomNavigation.addItem(chatItem);
+        bottomNavigation.addItem(billItem);
         //bottomNavigation.addItem(homeItem);
         //bottomNavigation.addItem(generalItem);
         //bottomNavigation.addItem(fitnessItem);
@@ -88,29 +92,29 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
 
         //show fragment
         switch(position) {
-            /* navigate to home */
+            /* navigate to chatroom */
             case 0:
                 System.out.println("case 0");
 
-                //Intent intent = new Intent(FragmentViewer.this, MainActivity.class);
+                Intent intent = new Intent(FragmentViewer.this, MainActivity.class);
                 //intent.putExtra("currentScenario", meta.get("scenarioName") );
-                //startActivity(intent);
+                startActivity(intent);
                 break;
 
-            /* navigate to general */
+            /* navigate to bills */
             case 1:
                 System.out.println("case 1");
 
-                //GeneralFragment generalFragment = new GeneralFragment();
-                //Bundle generalData = new Bundle();
+                BillFragment billFragment = new BillFragment();
+                Bundle generalData = new Bundle();
                 //taskScenarioData = (HashMap<String, HashMap>) getIntent().getSerializableExtra("scenarioData");
                 //generalData.putSerializable("taskScenarioData", taskScenarioData);
-                //generalFragment.setArguments(generalData);
+                billFragment.setArguments(generalData);
 
-                //getSupportFragmentManager()
-                //        .beginTransaction()
-                //        .replace(R.id.content_id, generalFragment)
-                //        .commit();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_id, billFragment)
+                        .commit();
                 break;
 
             /* navigate to fitness */

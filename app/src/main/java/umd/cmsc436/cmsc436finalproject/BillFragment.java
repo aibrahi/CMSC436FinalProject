@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 /**
  * Created by Clayton on 4/25/2017.
  */
@@ -14,6 +17,9 @@ import android.widget.Button;
 public class BillFragment extends android.support.v4.app.Fragment implements View.OnClickListener{
 
     View inflated_view;
+    private DatabaseReference mDatabase;
+
+
 
 
 
@@ -26,6 +32,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     public android.view.View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         inflated_view = inflater.inflate(R.layout.fragment_bill, container, false);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Button save_button = (Button) inflated_view.findViewById(R.id.bill_save_button);
         save_button.setOnClickListener(this);
