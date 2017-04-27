@@ -4,4 +4,6 @@
     <string name="cancel_label">Cancel</string>
     <string name="chat_label">Chats</string>
     <string name="bills_label">Bills</string>
+    <string name="chat_hint">New Chat Name</string>
+    <string name="new_chat_button">New Chat</string>
 </resources>
