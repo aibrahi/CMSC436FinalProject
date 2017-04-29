@@ -1,26 +1,22 @@
 package umd.cmsc436.cmsc436finalproject;
 
-/**
- * Created by ahmedinibrahim on 4/22/17.
- */
-
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,9 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -38,22 +32,25 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
- * Created by ahmedinibrahim on 4/17/17.
+ * Created by ahmedinibrahim on 4/28/17.
  */
 
-public class UsersChatRoom extends AppCompatActivity {
+public class UsersChatRoomFragment extends Fragment {
 
     private static final int RC_SIGN_IN = 1;
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     public static final int NEW_USER = 2;
+    private static final String ARG_CHATROOM_ID = "chatRoomId";
+    private static final String ARG_CHATROOM_NAME = "chatRoomName";
+
     private ChatRoom chatRoom;
 
     private String mUsername;
@@ -76,30 +73,35 @@ public class UsersChatRoom extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
 
 
+    public static Fragment newInstance(String chatRoomNAME, String chatRoomID) {
+        Bundle args = new Bundle();
+        args.putString(ARG_CHATROOM_ID, chatRoomID);
+        args.putString(ARG_CHATROOM_NAME, chatRoomNAME);
+
+        UsersChatRoomFragment fragment = new UsersChatRoomFragment();
+        fragment.setArguments(args);
+        return fragment;
+
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chatroom);
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.userschatroom_fragment, null);
 
         // Retrieve an instance of your database
-        Intent intent = getIntent();
-        chatRoomID = intent.getStringExtra("ChatRoomID");
-        chatRoomNAME = intent.getStringExtra("ChatRoomNAME");
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID);
 
-        this.setTitle(chatRoomNAME);
+        getActivity().setTitle(chatRoomNAME);
 
         // Initialize references to views
-        mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mSendButton = (Button) findViewById(R.id.sendButton);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageListView = (ListView) findViewById(R.id.messageListView);
+        mMessageEditText = (EditText) view.findViewById(R.id.messageEditText);
+        mSendButton = (Button) view.findViewById(R.id.sendButton);
+        mMessageListView = (ListView) view.findViewById(R.id.messageListView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
 
         // Initialize progress bar
@@ -107,7 +109,7 @@ public class UsersChatRoom extends AppCompatActivity {
 
         // Initialize message ListView and its adapter
         List<Messages> friendlyMessages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.activity_chatroom, friendlyMessages);
+        mMessageAdapter = new MessageAdapter(getActivity(), R.layout.userschatroom_fragment, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         // Initialize references to views and check the status of the user
@@ -117,22 +119,18 @@ public class UsersChatRoom extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if(user != null){
+                    Log.d("USSERR -->", user.getDisplayName());
                     // user is signed in
                     onSignedInInitialize(user.getDisplayName(), user.getUid());
 
                 }else{
                     // user is signed out
                     onSignedOutClean();
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
-
-
                 }
             }
         };
-
-
-
 
         // Enable Send button when there's text to send
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -155,7 +153,6 @@ public class UsersChatRoom extends AppCompatActivity {
         });
         mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
 
-
         // Send button sends a message and clears the EditText
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +166,19 @@ public class UsersChatRoom extends AppCompatActivity {
                 mMessageEditText.setText("");
             }
         });
+
+
+        return view;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        chatRoomID = getArguments().getString(ARG_CHATROOM_NAME);
+        chatRoomNAME = getArguments().getString(ARG_CHATROOM_ID);
+
 
     }
 
@@ -263,7 +273,7 @@ public class UsersChatRoom extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_USER) {
@@ -289,7 +299,7 @@ public class UsersChatRoom extends AppCompatActivity {
             case R.id.logout:
 
                 // sign out
-                
+
                 FirebaseAuth.getInstance().signOut();
 
 //                AuthUI.getInstance().signOut(this);
@@ -298,8 +308,8 @@ public class UsersChatRoom extends AppCompatActivity {
             case R.id.add_user:
 
                 // create a new intent to list all the users in the database and return the selected user
-                Intent pickContactIntent = new Intent(UsersChatRoom.this, ListOfUsers.class);
-                pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
+                Intent pickContactIntent = new Intent(getActivity(), ListOfUsersActivity.class);
+//                pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
                 startActivityForResult(pickContactIntent, NEW_USER);
 
                 return true;
@@ -311,7 +321,7 @@ public class UsersChatRoom extends AppCompatActivity {
 
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
         if(mChildEventListener != null){
@@ -323,21 +333,18 @@ public class UsersChatRoom extends AppCompatActivity {
         mMessageAdapter.clear();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_chatroom, menu);
 
-        return true;
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.activity_chatroom, menu);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
-
 }
-
-

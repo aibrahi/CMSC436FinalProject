@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -44,11 +45,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by ahmedinibrahim on 4/17/17.
  */
 
-public class ListOfUsers extends AppCompatActivity {
+public class ListOfUsersFragment extends Fragment {
 
     // Firebase Database variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -62,33 +65,36 @@ public class ListOfUsers extends AppCompatActivity {
 
     private UsersAdapter adapter;
 
+    public static Fragment newInstance() {
+        return new ListOfUsersFragment();
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listofusers);
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_listofusers, null);
 
 
         // Retrieve an instance of your database
-        Intent intent = getIntent();
-        membersList = intent.getStringArrayListExtra("ListOfMembers");
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("Users");
 
-        mMessageListView = (ListView) findViewById(R.id.usersListView);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressUsersBar);
+        mMessageListView = (ListView) view.findViewById(R.id.usersListView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressUsersBar);
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         // Initialize message ListView and its adapter
         ArrayList<User> arrayOfUsers = new ArrayList<User>();
-        adapter = new UsersAdapter(this, R.layout.item_users, arrayOfUsers);
+        adapter = new UsersAdapter(getActivity(), R.layout.item_users, arrayOfUsers);
         mMessageListView.setAdapter(adapter);
-
-
 
         mMessagesDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -97,8 +103,8 @@ public class ListOfUsers extends AppCompatActivity {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
 
 //                    if(!membersList.contains(data.getKey())){
-                        // use this object and store it into an ArrayList<Template> to use it further
-                        adapter.add(new User(data.getKey(), data.getValue().toString()));
+                    // use this object and store it into an ArrayList<Template> to use it further
+                    adapter.add(new User(data.getKey(), data.getValue().toString()));
 //                    }
                 }
 
@@ -115,18 +121,21 @@ public class ListOfUsers extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView v = (TextView) view.findViewById(R.id.usersTextView);
                 User user = (User) parent.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), "selected Item Name is " + user.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "selected Item Name is " + user.getId(), Toast.LENGTH_SHORT).show();
 
                 Intent data = new Intent();
                 data.putExtra("SelectedUser", user.getId());
-                setResult(RESULT_OK, data);
-                finish();
+                getActivity().setResult(RESULT_OK, data);
+                getActivity().finish();
 
             }
         });
 
 
+        return view;
     }
+
+
 
     private class UsersAdapter extends ArrayAdapter<User> {
 

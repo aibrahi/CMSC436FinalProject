@@ -16,10 +16,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".UsersChatRoom">
+        <activity android:name=".UsersChatRoomActivity">
         </activity>
 
-        <activity android:name=".ListOfUsers">
+        <activity android:name=".ListOfUsersActivity">
         </activity>
 
         <activity android:name=".FragmentViewer"></activity>
