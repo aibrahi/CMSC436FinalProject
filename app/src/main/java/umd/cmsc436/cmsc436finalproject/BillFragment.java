@@ -2,10 +2,12 @@ package umd.cmsc436.cmsc436finalproject;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private boolean hasChatRoom = false;
     private ArrayList<String> chatroom_users = new ArrayList<String>();
     private HashMap<String, Object> user_map = new HashMap<String, Object>();
+    private int total = 0;
 
 
 
@@ -106,7 +109,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                             if (chatRoom.getMembers().containsKey(user.getUid())){
                                 hasChatRoom = true;
-                                System.out.println(chatRoom.getChatRoomName());
+                                //System.out.println(chatRoom.getChatRoomName());
                                 for (String a: chatRoom.getMembers().keySet()){
                                     if (a != null) {
                                         chatroom_users.add(a);
@@ -137,7 +140,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     user_map.put(data.getKey(), data.getValue());
                 }
 
-                System.out.println(user_map.toString());
+                //System.out.println(user_map.toString());
 
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (String a: chatroom_users) {
@@ -145,9 +148,24 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     TableRow new_row = new TableRow(getActivity());
                     TextView user_textview = new TextView(getActivity());
                     user_textview.setText((String) user_map.get(a));
+
+                    EditText bill_edittext = new EditText(getActivity());
+                    bill_edittext.setHint("0");
+                    bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+
                     new_row.addView(user_textview);
+                    new_row.addView(bill_edittext);
                     users_bill_table.addView(new_row);
                 }
+
+                //Total
+                TableRow total_row = new TableRow(getActivity());
+                EditText total_bill = new EditText(getActivity());
+                total_bill.setHint("1000");
+                total_bill.setInputType(InputType.TYPE_CLASS_NUMBER);
+                total_row.addView(total_bill);
+                users_bill_table.addView(total_row);
+
             }
 
             @Override
