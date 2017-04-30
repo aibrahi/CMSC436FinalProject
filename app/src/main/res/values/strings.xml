@@ -72,4 +72,15 @@
 
     <!-- accessibility -->
     <string name="accessibility_logo">App logo</string>
+
+
+
+
+    <string name="cancel_label">Cancel</string>
+    <string name="chat_label">Chats</string>
+    <string name="bills_label">Bills</string>
+    <string name="chat_hint">New Chat Name</string>
+    <string name="new_chat_button">New Chat</string>
+    <string name="save_label">Save</string>
+    <string name="default_bill_name">Bill</string>
 </resources>

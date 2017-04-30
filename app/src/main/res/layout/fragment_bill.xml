@@ -3,10 +3,19 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="temporary"/>
+        android:id="@+id/bill_name"
+        android:text="@string/default_bill_name"/>
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/users_bill_table">
+
+
+    </TableLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

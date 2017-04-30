@@ -96,20 +96,27 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             case 0:
                 System.out.println("case 0");
 
-                Intent intent = new Intent(FragmentViewer.this, MainActivity.class);
-                //intent.putExtra("currentScenario", meta.get("scenarioName") );
-                startActivity(intent);
+                MainFragment mainFragment = new MainFragment();
+                Bundle mainFragData = new Bundle();
+                mainFragment.setArguments(mainFragData);
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content_id, mainFragment)
+                        .commit();
                 break;
+
+//                Intent intent = new Intent(FragmentViewer.this, MainActivity.class);
+//                startActivity(intent);
+
 
             /* navigate to bills */
             case 1:
                 System.out.println("case 1");
 
                 BillFragment billFragment = new BillFragment();
-                Bundle generalData = new Bundle();
-                //taskScenarioData = (HashMap<String, HashMap>) getIntent().getSerializableExtra("scenarioData");
-                //generalData.putSerializable("taskScenarioData", taskScenarioData);
-                billFragment.setArguments(generalData);
+                Bundle billData = new Bundle();
+                billFragment.setArguments(billData);
 
                 getSupportFragmentManager()
                         .beginTransaction()

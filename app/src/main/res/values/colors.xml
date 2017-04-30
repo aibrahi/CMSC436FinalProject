@@ -3,7 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="white">#FFFFFF</color>
+    <color name="white">#ffffff</color>
+    <color name="red">#f4424b</color>
+    <color name="blue">#4286f4</color>
+
+    <color name="orange">#ffa500</color>
+
     <color name="black">#000000</color>
     <color name="colorDivider">#2FE897</color>
     <color name="colorBorder">#a7a4a4</color>
