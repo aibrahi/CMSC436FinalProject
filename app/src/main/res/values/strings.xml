@@ -83,4 +83,8 @@
     <string name="new_chat_button">New Chat</string>
     <string name="save_label">Save</string>
     <string name="default_bill_name">Bill</string>
+    <string name="total_hint">1000.00</string>
+    <string name="total_label">Total: </string>
+    <string name="paid_label">Paid</string>
+    <string name="unpaid_label">Unpaid</string>
 </resources>

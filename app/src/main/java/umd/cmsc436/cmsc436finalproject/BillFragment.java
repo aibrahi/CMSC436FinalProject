@@ -7,7 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -145,26 +148,64 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (String a: chatroom_users) {
                     //user_map.get(a);
+
                     TableRow new_row = new TableRow(getActivity());
                     TextView user_textview = new TextView(getActivity());
                     user_textview.setText((String) user_map.get(a));
+                    //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
                     EditText bill_edittext = new EditText(getActivity());
-                    bill_edittext.setHint("0");
+                    bill_edittext.setHint("1000.00");
                     bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    //bill_edittext.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
                     new_row.addView(user_textview);
                     new_row.addView(bill_edittext);
+
+                    //if this is the current user, then we can allow him to say if he paid or is unpaid
+                    if (a.equals(user.getUid())) {
+                        Switch paid_switch = new Switch(getActivity());
+                        final TextView paid_textview = new TextView(getActivity());
+                        paid_textview.setText(R.string.unpaid_label);
+                        paid_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                //switch is toggled to paid
+                                if (isChecked) {
+                                    paid_textview.setText(R.string.paid_label);
+                                } else {
+                                    paid_textview.setText(R.string.unpaid_label);
+                                }
+
+                            }
+
+                        });
+
+                        new_row.addView(paid_switch);
+                        new_row.addView(paid_textview);
+                    } else {
+                        //otherwise, for other users, only show their status of paid or unpaid
+                        TextView paid_textview = new TextView(getActivity());
+                        paid_textview.setText(R.string.unpaid_label);
+                        new_row.addView(paid_textview);
+                    }
+
+
+
+
+
                     users_bill_table.addView(new_row);
                 }
 
                 //Total
-                TableRow total_row = new TableRow(getActivity());
-                EditText total_bill = new EditText(getActivity());
-                total_bill.setHint("1000");
-                total_bill.setInputType(InputType.TYPE_CLASS_NUMBER);
-                total_row.addView(total_bill);
-                users_bill_table.addView(total_row);
+//                TableRow total_row = new TableRow(getActivity());
+//                EditText total_bill = new EditText(getActivity());
+//                total_bill.setHint("1000");
+//                total_bill.setInputType(InputType.TYPE_CLASS_NUMBER);
+//                total_row.addView(total_bill);
+//                users_bill_table.addView(total_row);
 
             }
 
