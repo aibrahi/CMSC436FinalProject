@@ -92,6 +92,18 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             case R.id.bill_cancel_button:
                 break;
             case R.id.bill_save_button:
+                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                for (int index = 0; index < users_bill_table.getChildCount(); index++) {
+                    View table_row = users_bill_table.getChildAt(index);
+                    if (table_row instanceof TableRow) {
+                        TableRow curr_row = (TableRow) table_row;
+                        TextView user_name = (TextView) curr_row.getChildAt(0);
+                        //EditText bill_amount = (EditText) curr_row.getChildAt(1);
+                        if (user_name.getText().toString().equals(user.getDisplayName())){
+
+                        }
+                    }
+                }
                 break;
         }
     }
@@ -109,6 +121,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot data: dataSnapshot.getChildren()) {
                             ChatRoom chatRoom = data.getValue(ChatRoom.class);
+
+                            //chatroom_users = new ArrayList<String>();
 
                             if (chatRoom.getMembers().containsKey(user.getUid())){
                                 hasChatRoom = true;
@@ -143,7 +157,6 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     user_map.put(data.getKey(), data.getValue());
                 }
 
-                //System.out.println(user_map.toString());
 
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (String a: chatroom_users) {
@@ -192,20 +205,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         new_row.addView(paid_textview);
                     }
 
-
-
-
-
                     users_bill_table.addView(new_row);
                 }
-
-                //Total
-//                TableRow total_row = new TableRow(getActivity());
-//                EditText total_bill = new EditText(getActivity());
-//                total_bill.setHint("1000");
-//                total_bill.setInputType(InputType.TYPE_CLASS_NUMBER);
-//                total_row.addView(total_bill);
-//                users_bill_table.addView(total_row);
 
             }
 
