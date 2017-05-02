@@ -13,9 +13,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import umd.cmsc436.cmsc436finalproject.model.Bill;
@@ -27,11 +37,85 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
     private static final int REQUEST_CODE_CREATE_BILL = 1;
     private RecyclerView billRecyclerView;
+    private FirebaseDatabase mFireBaseDatabase;
+    private FirebaseAuth mFirebaseAuth;
+    private DatabaseReference mChatroomDatabaseReference;
+    private DatabaseReference mBillsDatabaseReference;
+    private FirebaseUser user;
+    private String chatRoomID;
+    private String chatRoomNAME;
+    private static final String ARG_CHATROOM_ID = "chatRoomId";
+    private static final String ARG_CHATROOM_NAME = "chatRoomName";
+    private ValueEventListener chatlistener;
+    private ValueEventListener billlistener;
+    private BillAdapter billAdapter;
+    private ArrayList<Bill> bills;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mFireBaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        user = mFirebaseAuth.getCurrentUser();
+        mChatroomDatabaseReference = mFireBaseDatabase.getReference().child("ChatRooms");
+        // Read from the database
+
+        bills = new ArrayList<Bill>();
+
+        billlistener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                bills.clear();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    System.out.println("A bill!");
+                    Bill abill = data.getValue(Bill.class);
+
+                    // if the user is in a chat group already send him/her to the chat
+                    bills.add(abill);
+                }
+                updateUI();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        chatlistener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                boolean found = false;
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ChatRoom chatRoom = data.getValue(ChatRoom.class);
+                    // if the user is in a chat group already send him/her to the chat
+
+                    if(chatRoom.getMembers().containsKey(user.getUid())){
+                        // the user has been found in a group
+                        found = true;
+                        chatRoomID = data.getKey();
+                        mBillsDatabaseReference = mFireBaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("bills");
+                        mBillsDatabaseReference.addValueEventListener(billlistener);
+                        System.out.println(chatRoom.getChatRoomName());
+                        break;
+                    }
+                }
+                if(found) {
+                    mChatroomDatabaseReference.removeEventListener(chatlistener);
+                }else {
+
+                    // Once the database changes make appropriate changes
+                    //updateUI();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     @Override
@@ -42,26 +126,22 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         billRecyclerView = (RecyclerView)view.findViewById(R.id.bill_recycler_view);
         billRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        mChatroomDatabaseReference.addListenerForSingleValueEvent(chatlistener);
+
+        ((Button)view.findViewById(R.id.add_bill)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bill dummyBill = new Bill();
+                dummyBill.setDescription("testbill");
+                dummyBill.setStatus(Bill.Status.PENDING.toString());
+                mBillsDatabaseReference.push().setValue(dummyBill);
+            }
+        });
+
+        updateUI();
+
+
         return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_bill_split, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch(item.getItemId()) {
-            case R.id.menu_item_add_bill:
-                //intent= new Intent(getActivity().getApplicationContext(), FragmentViewer.class);
-                //startActivityForResult(intent, REQUEST_CODE_CREATE_BILL);
-                break;
-            default: return super.onOptionsItemSelected(item);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -95,7 +175,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         public void bindBill(Bill b) {
             bill = b;
             description.setText(bill.getDescription());
-            status.setText(bill.getStatus().toString());
+            status.setText(bill.getStatus());
         }
 
         @Override
@@ -132,6 +212,17 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         @Override
         public int getItemCount() {
             return bills.size();
+        }
+    }
+
+    private void updateUI() {
+        if(billAdapter == null) {
+            billAdapter = new BillAdapter(bills);
+            billRecyclerView.setAdapter(billAdapter);
+        }
+        else {
+            billAdapter.setBills(bills);
+            billAdapter.notifyDataSetChanged();
         }
     }
 }

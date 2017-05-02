@@ -9,10 +9,15 @@ import java.io.Serializable;
 public class Bill implements Serializable {
 
     private String description;
-    private Status status;
+    private String status;
 
     public Bill(){
 
+    }
+
+    public Bill(String description, String status){
+        this.description = description;
+        this.status = status;
     }
 
     public String getDescription() {
@@ -23,42 +28,12 @@ public class Bill implements Serializable {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public int getStatusPosition() {
-        switch (status) {
-            case PENDING:
-                return 0;
-            case DONE:
-                return 1;
-            default:
-                return 0;
-        }
-    }
-
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
-    }
-
-    public void setStatus(int position) {
-        switch (position) {
-            case 0:
-                this.status = Status.PENDING;
-                break;
-            case 1:
-                this.status = Status.DONE;
-                break;
-            default:
-                this.status = Status.PENDING;
-                break;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return description + ", " + status.toString();
     }
 
     public enum Status {
