@@ -1,4 +1,4 @@
 # CMSC436FinalProject
 
 Team Members:
-Ahmedin Ibrahim
+Ahmedin Ibrahim, Vincent Ly, Clayton Zheng
