@@ -45,10 +45,14 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private HashMap<String, Object> user_map = new HashMap<String, Object>();
     private int total = 0;
     private DatabaseReference mBillsDatabaseReference;
+    private static final String BILL_ID = "BILL_ID";
+    private String bill_id;
 
     @Override
-    public void onCreate(Bundle savedInstancState) {
-        super.onCreate(savedInstancState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        bill_id = args.getString(BILL_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
         user = mFirebaseAuth.getCurrentUser();
@@ -109,7 +113,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 Bill b = new Bill();
                 b.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
                 b.setStatus("PENDING");
-                mBillsDatabaseReference.push().setValue(b);
+                if(bill_id.equals(""))
+                    mBillsDatabaseReference.push().setValue(b);
+                else
+                    mBillsDatabaseReference.child(bill_id).setValue(b);
                 getActivity().finish();
                 break;
         }
@@ -224,8 +231,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         });
     }
 
-    public static Fragment newInstance() {
-        return new BillFragment();
+    public static Fragment newInstance(String bill_id) {
+        Bundle b = new Bundle();
+        b.putString(BILL_ID, bill_id);
+        BillFragment bf = new BillFragment();
+        bf.setArguments(b);
+        return bf;
     }
 
 }

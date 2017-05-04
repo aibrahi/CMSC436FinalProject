@@ -36,7 +36,6 @@ import static android.app.Activity.RESULT_OK;
 public class BillSplitFragment extends android.support.v4.app.Fragment {
 
     private static final int REQUEST_CODE_CREATE_BILL = 1;
-    private static final String BILL_ID = "BILL_ID";
     private RecyclerView billRecyclerView;
     private FirebaseDatabase mFireBaseDatabase;
     private FirebaseAuth mFirebaseAuth;
@@ -119,11 +118,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         ((Button)view.findViewById(R.id.add_bill)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Bill dummyBill = new Bill();
-                dummyBill.setDescription("testbill");
-                dummyBill.setStatus(Bill.Status.PENDING.toString());
-                mBillsDatabaseReference.push().setValue(dummyBill);*/
-                Intent billfrag = new Intent(getActivity().getApplicationContext(), BillActivity.class);
+                Intent billfrag = BillActivity.newIntent(getActivity(), "");
                 startActivity(billfrag);
             }
         });
@@ -165,15 +160,14 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         public void bindBill(Bill b, String key) {
             bill = b;
+            this.key = key;
             description.setText(bill.getDescription());
             status.setText(bill.getStatus());
         }
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity().getApplicationContext(), bill.getDescription(), Toast.LENGTH_SHORT).show();
-            Intent billfrag = new Intent(getActivity().getApplicationContext(), BillActivity.class);
-            billfrag.putExtra(BILL_ID, key);
+            Intent billfrag = BillActivity.newIntent(getActivity(), key);
             startActivity(billfrag);
         }
     }
