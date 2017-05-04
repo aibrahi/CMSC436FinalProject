@@ -11,16 +11,26 @@ public class Bill implements Serializable {
 
     private String description;
     private String status;
+    private Double total;
     private HashMap<String, Double> payments;
 
     public Bill(){
 
     }
 
-    public Bill(String description, String status, HashMap<String, Double> payments){
+    public Bill(String description, String status, HashMap<String, Double> payments, Double total){
         this.description = description;
         this.status = status;
         this.payments = payments;
+        this.total = total;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
     }
 
     public String getDescription() {
@@ -43,6 +53,7 @@ public class Bill implements Serializable {
     {
         this.payments = payments;
     }
+
     public HashMap<String, Double> getPayments()
     {
         return this.payments;

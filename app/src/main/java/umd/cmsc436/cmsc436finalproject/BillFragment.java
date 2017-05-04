@@ -47,6 +47,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private DatabaseReference mBillsDatabaseReference;
     private static final String BILL_ID = "BILL_ID";
     private String bill_id;
+    private Bill current_bill;
+    private ValueEventListener billlistener;
+    private EditText billname;
+    private EditText billtotal;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,9 +60,31 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
         user = mFirebaseAuth.getCurrentUser();
-        create_refs();
-        //create_users_ref();
 
+        current_bill = new Bill();
+
+        billlistener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    if(data.getKey().equals(bill_id)) {
+                        current_bill = data.getValue(Bill.class);
+                        billname.setText(current_bill.getDescription());
+                        billtotal.setText(current_bill.getTotal().toString());
+                        mBillsDatabaseReference.removeEventListener(billlistener);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        //create_refs();
+        //create_users_ref();
     }
 
     @Override
@@ -66,8 +92,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
         inflated_view = inflater.inflate(R.layout.fragment_bill, container, false);
 
-
-        System.out.println("Current user:" + user);
+        /*System.out.println("Current user:" + user);
 
         if(user != null){
             // user is signed in
@@ -77,7 +102,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         }
 
 
-        System.out.println("what is this:" + mDatabase.child("ChatRooms"));
+        System.out.println("what is this:" + mDatabase.child("ChatRooms"));*/
+
+        billname = (EditText)inflated_view.findViewById(R.id.bill_name);
+        billtotal = (EditText)inflated_view.findViewById(R.id.total_edittext);
+
+        create_refs();
 
         Button save_button = (Button) inflated_view.findViewById(R.id.bill_save_button);
         save_button.setOnClickListener(this);
@@ -110,13 +140,13 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         }
                     }
                 }*/
-                Bill b = new Bill();
-                b.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
-                b.setStatus("PENDING");
+                current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
+                current_bill.setStatus("PENDING");
+                current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
                 if(bill_id.equals(""))
-                    mBillsDatabaseReference.push().setValue(b);
+                    mBillsDatabaseReference.push().setValue(current_bill);
                 else
-                    mBillsDatabaseReference.child(bill_id).setValue(b);
+                    mBillsDatabaseReference.child(bill_id).setValue(current_bill);
                 getActivity().finish();
                 break;
         }
@@ -148,6 +178,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                 }
 
                                 mBillsDatabaseReference = mDatabase.child("ChatRooms").child(data.getKey()).child("bills");
+                                mBillsDatabaseReference.addListenerForSingleValueEvent(billlistener);
                                 create_users_ref();
 
                             }
