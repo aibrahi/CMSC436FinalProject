@@ -2,6 +2,7 @@ package umd.cmsc436.cmsc436finalproject;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import umd.cmsc436.cmsc436finalproject.model.Bill;
+
 /**
  * Created by Clayton on 4/25/2017.
  */
@@ -41,9 +44,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ArrayList<String> chatroom_users = new ArrayList<String>();
     private HashMap<String, Object> user_map = new HashMap<String, Object>();
     private int total = 0;
-
-
-
+    private DatabaseReference mBillsDatabaseReference;
 
     @Override
     public void onCreate(Bundle savedInstancState) {
@@ -90,9 +91,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.bill_cancel_button:
+                getActivity().finish();
                 break;
             case R.id.bill_save_button:
-                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                /*TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (int index = 0; index < users_bill_table.getChildCount(); index++) {
                     View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
@@ -103,7 +105,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                         }
                     }
-                }
+                }*/
+                Bill b = new Bill();
+                b.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
+                b.setStatus("PENDING");
+                mBillsDatabaseReference.push().setValue(b);
+                getActivity().finish();
                 break;
         }
     }
@@ -133,7 +140,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                     }
                                 }
 
-
+                                mBillsDatabaseReference = mDatabase.child("ChatRooms").child(data.getKey()).child("bills");
                                 create_users_ref();
 
                             }
@@ -217,6 +224,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         });
     }
 
-
+    public static Fragment newInstance() {
+        return new BillFragment();
+    }
 
 }

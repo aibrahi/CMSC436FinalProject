@@ -36,6 +36,7 @@ import static android.app.Activity.RESULT_OK;
 public class BillSplitFragment extends android.support.v4.app.Fragment {
 
     private static final int REQUEST_CODE_CREATE_BILL = 1;
+    private static final String BILL_ID = "BILL_ID";
     private RecyclerView billRecyclerView;
     private FirebaseDatabase mFireBaseDatabase;
     private FirebaseAuth mFirebaseAuth;
@@ -43,13 +44,11 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
     private DatabaseReference mBillsDatabaseReference;
     private FirebaseUser user;
     private String chatRoomID;
-    private String chatRoomNAME;
-    private static final String ARG_CHATROOM_ID = "chatRoomId";
-    private static final String ARG_CHATROOM_NAME = "chatRoomName";
     private ValueEventListener chatlistener;
     private ValueEventListener billlistener;
     private BillAdapter billAdapter;
     private ArrayList<Bill> bills;
+    private ArrayList<String> billkeys;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,20 +58,19 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         mFirebaseAuth = FirebaseAuth.getInstance();
         user = mFirebaseAuth.getCurrentUser();
         mChatroomDatabaseReference = mFireBaseDatabase.getReference().child("ChatRooms");
-        // Read from the database
 
         bills = new ArrayList<Bill>();
+        billkeys = new ArrayList<String>();
 
         billlistener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bills.clear();
+                billkeys.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    System.out.println("A bill!");
                     Bill abill = data.getValue(Bill.class);
-
-                    // if the user is in a chat group already send him/her to the chat
                     bills.add(abill);
+                    billkeys.add(data.getKey());
                 }
                 updateUI();
             }
@@ -87,27 +85,17 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                boolean found = false;
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     ChatRoom chatRoom = data.getValue(ChatRoom.class);
-                    // if the user is in a chat group already send him/her to the chat
 
                     if(chatRoom.getMembers().containsKey(user.getUid())){
-                        // the user has been found in a group
-                        found = true;
                         chatRoomID = data.getKey();
                         mBillsDatabaseReference = mFireBaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("bills");
                         mBillsDatabaseReference.addValueEventListener(billlistener);
                         System.out.println(chatRoom.getChatRoomName());
+                        mChatroomDatabaseReference.removeEventListener(chatlistener);
                         break;
                     }
-                }
-                if(found) {
-                    mChatroomDatabaseReference.removeEventListener(chatlistener);
-                }else {
-
-                    // Once the database changes make appropriate changes
-                    //updateUI();
                 }
             }
 
@@ -131,10 +119,12 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         ((Button)view.findViewById(R.id.add_bill)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bill dummyBill = new Bill();
+                /*Bill dummyBill = new Bill();
                 dummyBill.setDescription("testbill");
                 dummyBill.setStatus(Bill.Status.PENDING.toString());
-                mBillsDatabaseReference.push().setValue(dummyBill);
+                mBillsDatabaseReference.push().setValue(dummyBill);*/
+                Intent billfrag = new Intent(getActivity().getApplicationContext(), BillActivity.class);
+                startActivity(billfrag);
             }
         });
 
@@ -163,6 +153,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         private Bill bill;
         TextView description;
         TextView status;
+        String key;
 
 
         public BillHolder(View v) {
@@ -172,7 +163,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             status = (TextView) v.findViewById(R.id.list_bill_status);
         }
 
-        public void bindBill(Bill b) {
+        public void bindBill(Bill b, String key) {
             bill = b;
             description.setText(bill.getDescription());
             status.setText(bill.getStatus());
@@ -180,8 +171,10 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity().getApplicationContext(), bill.toString(), Toast.LENGTH_SHORT).show();
-            //intent fragmentviewer
+            Toast.makeText(getActivity().getApplicationContext(), bill.getDescription(), Toast.LENGTH_SHORT).show();
+            Intent billfrag = new Intent(getActivity().getApplicationContext(), BillActivity.class);
+            billfrag.putExtra(BILL_ID, key);
+            startActivity(billfrag);
         }
     }
 
@@ -206,7 +199,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onBindViewHolder(BillHolder holder, int position) {
-            holder.bindBill(bills.get(position));
+            holder.bindBill(bills.get(position), billkeys.get(position));
         }
 
         @Override
