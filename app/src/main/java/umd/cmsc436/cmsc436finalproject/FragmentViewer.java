@@ -114,13 +114,13 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             case 1:
                 System.out.println("case 1");
 
-                BillFragment billFragment = new BillFragment();
+                BillSplitFragment billSplitFragment = new BillSplitFragment();
                 Bundle billData = new Bundle();
-                billFragment.setArguments(billData);
+                billSplitFragment.setArguments(billData);
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.content_id, billFragment)
+                        .replace(R.id.content_id, billSplitFragment)
                         .commit();
                 break;
 

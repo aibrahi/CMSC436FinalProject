@@ -1,6 +1,7 @@
 package umd.cmsc436.cmsc436finalproject.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by Vincent Ly on 4/25/2017.
@@ -9,10 +10,27 @@ import java.io.Serializable;
 public class Bill implements Serializable {
 
     private String description;
-    private Status status;
+    private String status;
+    private Double total;
+    private HashMap<String, Double> payments;
 
     public Bill(){
 
+    }
+
+    public Bill(String description, String status, HashMap<String, Double> payments, Double total){
+        this.description = description;
+        this.status = status;
+        this.payments = payments;
+        this.total = total;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
     }
 
     public String getDescription() {
@@ -23,45 +41,21 @@ public class Bill implements Serializable {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public int getStatusPosition() {
-        switch (status) {
-            case PENDING:
-                return 0;
-            case DONE:
-                return 1;
-            default:
-                return 0;
-        }
-    }
-
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public void setStatus(int position) {
-        switch (position) {
-            case 0:
-                this.status = Status.PENDING;
-                break;
-            case 1:
-                this.status = Status.DONE;
-                break;
-            default:
-                this.status = Status.PENDING;
-                break;
-        }
+    public void setPayments(HashMap<String, Double> map)
+    {
+        this.payments = payments;
     }
 
-    @Override
-    public String toString() {
-        return description + ", " + status.toString();
-    }
-
-    public enum Status {
-        PENDING, DONE;
+    public HashMap<String, Double> getPayments()
+    {
+        return this.payments;
     }
 }

@@ -3,7 +3,6 @@ package umd.cmsc436.cmsc436finalproject;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import umd.cmsc436.cmsc436finalproject.model.Bill;
+
 /**
  * Created by Clayton on 4/25/2017.
  */
@@ -43,21 +44,50 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ArrayList<String> chatroom_users = new ArrayList<String>();
     private HashMap<String, Object> user_map = new HashMap<String, Object>();
     private int total = 0;
+    private DatabaseReference mBillsDatabaseReference;
+    private static final String BILL_ID = "BILL_ID";
+    private String bill_id;
+    private Bill current_bill;
+    private ValueEventListener billlistener;
+    private EditText billname;
+    private EditText billtotal;
 
 
 
-    //add a check to see if the user is the owner, if yes, allow them access to editting bill values
-    //add arguments to the billsplitfragment to change the bill's name, update bill's values, and paid
 
     @Override
-    public void onCreate(Bundle savedInstancState) {
-        super.onCreate(savedInstancState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        bill_id = args.getString(BILL_ID);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
         user = mFirebaseAuth.getCurrentUser();
-        create_refs();
-        //create_users_ref();
 
+        current_bill = new Bill();
+
+        billlistener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    if(data.getKey().equals(bill_id)) {
+                        current_bill = data.getValue(Bill.class);
+                        billname.setText(current_bill.getDescription());
+                        billtotal.setText(current_bill.getTotal().toString());
+                        mBillsDatabaseReference.removeEventListener(billlistener);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        //create_refs();
+        //create_users_ref();
     }
 
     @Override
@@ -65,9 +95,6 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
         inflated_view = inflater.inflate(R.layout.fragment_bill, container, false);
 
-        if (getArguments().getCharSequence("lol") != null) {
-            //test
-        }
 
         System.out.println("Current user:" + user);
 
@@ -79,7 +106,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         }
 
 
-        System.out.println("what is this:" + mDatabase.child("ChatRooms"));
+        System.out.println("what is this:" + mDatabase.child("ChatRooms"));*/
+
+        billname = (EditText)inflated_view.findViewById(R.id.bill_name);
+        billtotal = (EditText)inflated_view.findViewById(R.id.total_edittext);
+
+        create_refs();
 
         Button save_button = (Button) inflated_view.findViewById(R.id.bill_save_button);
         save_button.setOnClickListener(this);
@@ -97,6 +129,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.bill_cancel_button:
+                getActivity().finish();
                 break;
             case R.id.bill_save_button:
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
@@ -135,6 +168,17 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     AlertDialog incorrect_total_dialog = create_dialog_box("Missing values", "Please enter values.");
                     incorrect_total_dialog.show();
                 }
+
+                /*
+                current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
+                current_bill.setStatus("PENDING");
+                current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
+                if(bill_id.equals(""))
+                    mBillsDatabaseReference.push().setValue(current_bill);
+                else
+                    mBillsDatabaseReference.child(bill_id).setValue(current_bill);
+                getActivity().finish();
+                 */
                 break;
         }
     }
@@ -193,7 +237,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                     }
                                 }
 
-
+                                mBillsDatabaseReference = mDatabase.child("ChatRooms").child(data.getKey()).child("bills");
+                                mBillsDatabaseReference.addListenerForSingleValueEvent(billlistener);
                                 create_users_ref();
 
                             }
@@ -277,6 +322,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         });
     }
 
-
+    public static Fragment newInstance(String bill_id) {
+        Bundle b = new Bundle();
+        b.putString(BILL_ID, bill_id);
+        BillFragment bf = new BillFragment();
+        bf.setArguments(b);
+        return bf;
+    }
 
 }
