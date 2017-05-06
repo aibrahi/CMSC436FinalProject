@@ -1,7 +1,9 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
 
 
+    //add a check to see if the user is the owner, if yes, allow them access to editting bill values
+    //add arguments to the billsplitfragment to change the bill's name, update bill's values, and paid
 
     @Override
     public void onCreate(Bundle savedInstancState) {
@@ -61,6 +65,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
         inflated_view = inflater.inflate(R.layout.fragment_bill, container, false);
 
+        if (getArguments().getCharSequence("lol") != null) {
+            //test
+        }
 
         System.out.println("Current user:" + user);
 
@@ -93,19 +100,72 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 break;
             case R.id.bill_save_button:
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                double running_total = 0;
+                boolean incomplete = false;
                 for (int index = 0; index < users_bill_table.getChildCount(); index++) {
                     View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow curr_row = (TableRow) table_row;
                         TextView user_name = (TextView) curr_row.getChildAt(0);
-                        //EditText bill_amount = (EditText) curr_row.getChildAt(1);
-                        if (user_name.getText().toString().equals(user.getDisplayName())){
-
+                        EditText bill_amount = (EditText) curr_row.getChildAt(1);
+                        if (bill_amount.getText().toString().isEmpty()) {
+                            AlertDialog empty_bill_amount = create_dialog_box("Empty bill amount for " + user_name.getText(), "Please re-check the money values for: " + user_name.getText());
+                            empty_bill_amount.show();
+                        } else {
+                            running_total += Double.parseDouble(bill_amount.getText().toString());
+                            if (user_name.getText().toString().equals(user.getDisplayName())){
+                                Switch user_paid_switch = (Switch) curr_row.getChildAt(2);
+                                if (user_paid_switch.isChecked()) {
+                                    //user has paid
+                                    System.out.println("yeah u right");
+                                }
+                            }
                         }
                     }
                 }
+
+                EditText total_edittext = (EditText) inflated_view.findViewById(R.id.total_edittext);
+                if (total_edittext.getText() != null && total_edittext.getText().length() > 0) {
+                    if (running_total != Double.parseDouble(total_edittext.getText().toString())) {
+
+                        AlertDialog incorrect_total_dialog = create_dialog_box("Incorrect total amount", "Please re-check the money values.");
+                        incorrect_total_dialog.show();
+                    }
+                } else {
+                    AlertDialog incorrect_total_dialog = create_dialog_box("Missing values", "Please enter values.");
+                    incorrect_total_dialog.show();
+                }
                 break;
         }
+    }
+
+    public AlertDialog create_dialog_box(String title, String message) {
+        LayoutInflater li = LayoutInflater.from(getContext());
+        View dialogView = li.inflate(R.layout.dialog_incorrect_total, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        // set title
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(message);
+        // set custom dialog icon
+
+        //alertDialogBuilder.setIcon(android.R.drawable.ic_input_add);
+
+        // set custom_dialog.xml to alertdialog builder
+        alertDialogBuilder.setView(dialogView);
+
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                dialog.cancel();
+                            }
+                        });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show it
+        return alertDialog;
     }
 
     public void create_bill_participants(){
