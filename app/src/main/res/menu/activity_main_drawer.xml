@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all_members"
+            android:icon="@drawable/user_search"
+            android:title="All Members" />
+        <item
+            android:id="@+id/nav_add_members"
+            android:icon="@drawable/user_add"
+            android:title="Add Members" />
+        <item
+            android:id="@+id/nav_remove_member"
+            android:icon="@drawable/user_remove"
+            android:title="Remove Members" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/power"
+            android:title="Logout" />
+    </group>
+
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/gear"
+                android:title="Manage Account" />
+
+        </menu>
+    </item>
+
+</menu>
