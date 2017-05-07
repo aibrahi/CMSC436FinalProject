@@ -114,6 +114,7 @@ public class SplashScreen extends AppCompatActivity {
                                     // Create the intent to send the user to their chat room
                                     Intent createStoryIntent = new Intent(getApplicationContext(), FragmentViewer.class);
                                     createStoryIntent.putExtra("ChatRoomNAME", chatRoom.getChatRoomName());
+
                                     createStoryIntent.putExtra("ChatRoomID", data.getKey());
                                     startActivity(createStoryIntent);
 

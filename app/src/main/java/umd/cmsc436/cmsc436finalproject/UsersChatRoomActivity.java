@@ -49,7 +49,7 @@ public class UsersChatRoomActivity extends SingleFragmentActivity {
 
     public Fragment createFragment() {
         String chatRoomID = getIntent().getStringExtra("ChatRoomID");
-        String chatRoomNAME = getIntent().getStringExtra("ChatRoomNAME");
+        String chatRoomNAME = getIntent().getStringExtra("chatRoomName");
         return UsersChatRoomFragment.newInstance(chatRoomID, chatRoomNAME);
     }
 

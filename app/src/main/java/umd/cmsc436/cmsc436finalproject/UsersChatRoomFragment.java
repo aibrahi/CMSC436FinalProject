@@ -85,6 +85,17 @@ public class UsersChatRoomFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        chatRoomID = getArguments().getString(ARG_CHATROOM_ID);
+        chatRoomNAME = getArguments().getString(ARG_CHATROOM_NAME);
+
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.userschatroom_fragment, null);
@@ -158,7 +169,7 @@ public class UsersChatRoomFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Messages friendlyMessages = new Messages(mMessageEditText.getText().toString(), mUsername);
+                Messages friendlyMessages = new Messages(mMessageEditText.getText().toString(), mUsername, mUserId);
                 mMessagesDatabaseReference.child("messages").push().setValue(friendlyMessages);
 
 
@@ -171,16 +182,7 @@ public class UsersChatRoomFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
-        chatRoomID = getArguments().getString(ARG_CHATROOM_NAME);
-        chatRoomNAME = getArguments().getString(ARG_CHATROOM_ID);
-
-
-    }
 
     public class MessageAdapter extends ArrayAdapter<Messages> {
         public MessageAdapter(Context context, int resource, List<Messages> objects) {
@@ -208,7 +210,7 @@ public class UsersChatRoomFragment extends Fragment {
             LinearLayout.LayoutParams nameXML = (LinearLayout.LayoutParams) authorTextView.getLayoutParams();
 
             // if the message is mine, keep the message to the left
-            if(message.getName().equals(mUsername)) {
+            if(message.getUid().equals(mUserId)) {
                 messageXML.gravity = Gravity.LEFT;
                 nameXML.gravity = Gravity.LEFT;
 

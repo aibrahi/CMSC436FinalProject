@@ -12,11 +12,13 @@ package umd.cmsc436.cmsc436finalproject;
 public class Messages {
     private String text;
     private String name;
+    private String uid;
 
     Messages(){}
-    Messages(String text, String name){
+    Messages(String text, String name, String uid){
         this.text = text;
         this.name = name;
+        this.uid = uid;
     }
 
 
@@ -34,5 +36,13 @@ public class Messages {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

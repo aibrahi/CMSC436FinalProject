@@ -264,6 +264,7 @@ public class UpdateProfileFragment extends Fragment {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(getApplicationContext(), "Password is updated, sign in with new password!", Toast.LENGTH_SHORT).show();
+
                                             signOut();
                                             progressBar.setVisibility(View.GONE);
 
@@ -314,10 +315,9 @@ public class UpdateProfileFragment extends Fragment {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(getApplicationContext(), "User profile updated.", Toast.LENGTH_SHORT).show();
-
-                                            resetVisibility();
                                             // Update User database as well
                                             mFirebaseDatabase.getReference().child("Users").child(user.getUid()).child("displayName").setValue(usersName.getText().toString());
+                                            resetVisibility();
                                             progressBar.setVisibility(View.GONE);
                                         }
                                     }

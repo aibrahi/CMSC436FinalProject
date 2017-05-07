@@ -54,6 +54,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
     private AHBottomNavigation bottomNavigation;
     private User mUser;
     private String chatRoomID;
+    private String chatRoomName;
 
     // Layout variables
     private TextView userEmailNav;
@@ -82,6 +83,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
 //        String MANEUVER_ID  = intent.getStringExtra("selection"); //Exception points to this line
 //        Log.d("*** DEBUG", rec + " " + MANEUVER_ID);
         chatRoomID = intent.getStringExtra("ChatRoomID");
+        chatRoomName = intent.getStringExtra("ChatRoomNAME");
 //        Log.d("USSERR -->", intent.getStringExtra("ChatRoomID"));
 
 
@@ -221,7 +223,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
                 Bundle mainFragData = new Bundle();
 
                 mainFragData.putString("chatRoomId", chatRoomID);
-                mainFragData.putString("chatRoomName", "CHAT ROOM");
+                mainFragData.putString("chatRoomName", chatRoomName);
 
                 mainFragment.setArguments(mainFragData);
 
