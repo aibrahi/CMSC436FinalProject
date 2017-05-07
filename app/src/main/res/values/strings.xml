@@ -92,4 +92,5 @@
     <string name="total_label">Total: </string>
     <string name="paid_label">Paid</string>
     <string name="unpaid_label">Unpaid</string>
+    <string name="incorrect_dialog_label">Incorrect total amount</string>
 </resources>

@@ -1,8 +1,10 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +55,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ValueEventListener billlistener;
     private EditText billname;
     private EditText billtotal;
+
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +99,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
         inflated_view = inflater.inflate(R.layout.fragment_bill, container, false);
 
-        /*System.out.println("Current user:" + user);
+
+        System.out.println("Current user:" + user);
 
         if(user != null){
             // user is signed in
@@ -102,7 +110,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         }
 
 
-        System.out.println("what is this:" + mDatabase.child("ChatRooms"));*/
+        System.out.println("what is this:" + mDatabase.child("ChatRooms"));
 
         billname = (EditText)inflated_view.findViewById(R.id.bill_name);
         billtotal = (EditText)inflated_view.findViewById(R.id.total_edittext);
@@ -128,34 +136,113 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 getActivity().finish();
                 break;
             case R.id.bill_save_button:
-                /*TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+
+                EditText total_edittext = (EditText) inflated_view.findViewById(R.id.total_edittext);
+                double running_total = 0;
+                int number_of_paid = 0;
+                TextView paid_text;
+
+                //iterates through the table to see if each user has an amount listed for them
+                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                int total_members = users_bill_table.getChildCount();
                 for (int index = 0; index < users_bill_table.getChildCount(); index++) {
                     View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow curr_row = (TableRow) table_row;
                         TextView user_name = (TextView) curr_row.getChildAt(0);
-                        //EditText bill_amount = (EditText) curr_row.getChildAt(1);
-                        if (user_name.getText().toString().equals(user.getDisplayName())){
+                        EditText bill_amount = (EditText) curr_row.getChildAt(1);
+                        if (user_name.getText().toString().equals(user.getDisplayName())) {
+                            paid_text = (TextView) curr_row.getChildAt(3);
+                        } else {
+                            paid_text = (TextView) curr_row.getChildAt(2);
 
                         }
+
+                        if (paid_text.getText().toString().equals("Paid")) {
+                            number_of_paid++;
+                        }
+
+                        if (bill_amount.getText().toString().isEmpty()) {
+                            AlertDialog empty_bill_amount = create_dialog_box("Empty bill amount for " + user_name.getText(), "Please re-check the money values for: " + user_name.getText());
+                            empty_bill_amount.show();
+                            break;
+                        } else {
+                            running_total += Double.parseDouble(bill_amount.getText().toString());
+                        }
+                        if (user_name.getText().toString().equals(user.getDisplayName())) {
+                            Switch user_paid_switch = (Switch) curr_row.getChildAt(2);
+                            if (user_paid_switch.isChecked()) {
+                                //user has paid
+                                System.out.println("yeah u right");
+                            }
+                        }
                     }
-                }*/
-                current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
-                current_bill.setStatus("PENDING");
-                current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
-                if(bill_id.equals(""))
-                    mBillsDatabaseReference.push().setValue(current_bill);
-                else
-                    mBillsDatabaseReference.child(bill_id).setValue(current_bill);
-                getActivity().finish();
+                }
+
+                //if the user input a total then create or edit a bill for them
+                if (total_edittext.getText() != null && total_edittext.getText().length() > 0) {
+
+                    if (running_total != Double.parseDouble(total_edittext.getText().toString())) {
+                        AlertDialog incorrect_total = create_dialog_box("Incorrect Total", "Please re-check values");
+                        incorrect_total.show();
+                        break;
+                    }
+
+                    current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
+
+                    if (number_of_paid == total_members) {
+                        current_bill.setStatus("PAID");
+                    } else {
+                        current_bill.setStatus("PENDING");
+                    }
+
+                    current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
+
+                    if(bill_id.equals(""))
+                        mBillsDatabaseReference.push().setValue(current_bill);
+                    else
+                        mBillsDatabaseReference.child(bill_id).setValue(current_bill);
+                    getActivity().finish();
+
+                    //otherwise tell them that the bill is incomplete
+                } else {
+                    AlertDialog missing_dialog = create_dialog_box("Incomplete Bill", "Please enter values.");
+                    missing_dialog.show();
+                }
+
                 break;
         }
     }
 
-    public void create_bill_participants(){
+    public AlertDialog create_dialog_box(String title, String message) {
+        LayoutInflater li = LayoutInflater.from(getContext());
+        View dialogView = li.inflate(R.layout.dialog_incorrect_total, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        // set title
+        alertDialogBuilder.setTitle(title);
+        alertDialogBuilder.setMessage(message);
+        // set custom dialog icon
 
+        //alertDialogBuilder.setIcon(android.R.drawable.ic_input_add);
 
+        // set custom_dialog.xml to alertdialog builder
+        alertDialogBuilder.setView(dialogView);
+
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                dialog.cancel();
+                            }
+                        });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        // show it
+        return alertDialog;
     }
+
 
     public void create_refs() {
         DatabaseReference ref = mDatabase.child("ChatRooms");
@@ -262,7 +349,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         });
     }
 
-    public static Fragment newInstance(String bill_id) {
+    public static BillFragment newInstance(String bill_id) {
         Bundle b = new Bundle();
         b.putString(BILL_ID, bill_id);
         BillFragment bf = new BillFragment();
