@@ -3,31 +3,152 @@ package umd.cmsc436.cmsc436finalproject;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.bumptech.glide.Glide;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Clayton on 4/25/2017.
  */
 
-public class FragmentViewer extends AppCompatActivity implements AHBottomNavigation.OnTabSelectedListener {
+public class FragmentViewer extends AppCompatActivity implements AHBottomNavigation.OnTabSelectedListener, NavigationView.OnNavigationItemSelectedListener {
 
-    AHBottomNavigation bottomNavigation;
+    // constant static variables
+    private static final int RC_SIGN_IN = 1;
+    public static final int NEW_USER = 2;
+    public static final int REMOVE_USER = 3;
+
+    // Other variables
     private String prev_class;
-    HashMap<String, HashMap> taskScenarioData;
-    HashMap<String, HashMap> meta;
+    private HashMap<String, HashMap> taskScenarioData;
+    private HashMap<String, HashMap> meta;
+    private AHBottomNavigation bottomNavigation;
+    private User mUser;
+    private String chatRoomID;
+
+    // Layout variables
+    private TextView userEmailNav;
+    private TextView userNameNav;
+    private ImageView userImageNav;
+    private List<String> membersList = new ArrayList<String>();
+
+
+    // Firebase Database variables
+    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseUser mUserFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_viewer);
+
+        Intent intent = getIntent();
+        if (intent.getStringExtra("ChatRoomID") == null){
+            Log.d("***DEBUG****", "Intent was null");
+    }else {
+            Log.d("**** DEBUG ***", "Intent OK");
+        }
+//        String MANEUVER_ID  = intent.getStringExtra("selection"); //Exception points to this line
+//        Log.d("*** DEBUG", rec + " " + MANEUVER_ID);
+        chatRoomID = intent.getStringExtra("ChatRoomID");
+//        Log.d("USSERR -->", intent.getStringExtra("ChatRoomID"));
+
+
+
+        /* NAVIGATION & TOOLBAR */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerLayout = navigationView.getHeaderView(0);
+
+        // layouts for top nav
+        userEmailNav = (TextView) headerLayout.findViewById(R.id.userEmail);
+        userNameNav = (TextView) headerLayout.findViewById(R.id.usersName);
+        userImageNav = (ImageView) headerLayout.findViewById(R.id.userImage);
+
+        navigationView.bringToFront();
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+        // Retrieve an instance of the database
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
+        // Initialize references to views and check the status of the user
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null){
+                    // user is signed in
+                    Log.d("USSERRR--->", user.getDisplayName());
+
+                    onSignedInInitialize(user);
+
+                }else{
+                    // user is signed out and send to the splash screen
+                    onSignedOutClean();
+                    Intent intent = new Intent(getApplicationContext(), SplashScreen.class);
+                    startActivity(intent);
+                }
+            }
+        };
+
+        mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                ChatRoom chatRoom = dataSnapshot.getValue(ChatRoom.class);
+                Log.d("MEMBERS LIST--->", chatRoom.getMembers().keySet().toString());
+                membersList.addAll(chatRoom.getMembers().keySet());
+//                membersList.remove(mUserId);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 //        //extract hashtable from bundle passed in
@@ -96,8 +217,12 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             case 0:
                 System.out.println("case 0");
 
-                MainFragment mainFragment = new MainFragment();
+                UsersChatRoomFragment mainFragment = new UsersChatRoomFragment();
                 Bundle mainFragData = new Bundle();
+
+                mainFragData.putString("chatRoomId", chatRoomID);
+                mainFragData.putString("chatRoomName", "CHAT ROOM");
+
                 mainFragment.setArguments(mainFragData);
 
                 getSupportFragmentManager()
@@ -159,4 +284,145 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         return true;
     }
 
+    private void onSignedOutClean() {
+
+    }
+
+    // Add the user to the user schema database and initialize user
+    private void onSignedInInitialize(FirebaseUser user) {
+        mUserFb = user;
+
+        userEmailNav.setText(user.getEmail().toString());
+        userNameNav.setText(user.getDisplayName().toString());
+
+
+        // get the image for the user
+        mFirebaseDatabase.getReference().child("Users").child(user.getUid()).child("photourl").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("URL -->", dataSnapshot.getValue().toString());
+
+                StorageReference imageStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(dataSnapshot.getValue().toString());
+
+
+                Glide.with(getApplicationContext() /* context */)
+                        .using(new FirebaseImageLoader())
+                        .load(imageStorageReference)
+                        .into(userImageNav);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if( requestCode == RC_SIGN_IN){
+            if(resultCode == RESULT_OK){
+
+            }
+        }
+
+        if (requestCode == NEW_USER) {
+
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                // Get new user ID
+                String newuser = data.getExtras().getString("SelectedUser");
+
+                // Add the user as a members to the chat room
+                mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(newuser).setValue("member");
+
+            }
+        }
+
+        if (requestCode == REMOVE_USER) {
+
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                // Get new user ID
+                String newuser = data.getExtras().getString("SelectedUser");
+
+                // Add the user as a members to the chat room
+                mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(newuser).removeValue();
+
+            }
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+
+        if(id == R.id.nav_all_members) {
+            // create a new intent to list all the users in the database and return the selected user
+            Intent listofMembersIntent = new Intent(getApplicationContext(), ListOfUsersActivity.class);
+            listofMembersIntent.putExtra("onlymembers", true);
+            listofMembersIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
+            listofMembersIntent.putExtra("ChatRoomID", chatRoomID);
+            startActivity(listofMembersIntent);
+
+            // Adds members to the list
+        }else if (id == R.id.nav_add_members) {
+
+            // create a new intent to list all the users in the database and return the selected user
+            Intent pickContactIntent = new Intent(getApplicationContext(), ListOfUsersActivity.class);
+            pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
+            pickContactIntent.putExtra("ChatRoomID", chatRoomID);
+            pickContactIntent.putExtra("onlymembers", false);
+            startActivityForResult(pickContactIntent, NEW_USER);
+
+            // Removes a member from the group
+        }else if(id == R.id.nav_remove_member) {
+
+            // create a new intent to list all the users in the database and return the selected user
+            Intent pickContactIntent = new Intent(getApplicationContext(), ListOfUsersActivity.class);
+            pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
+            pickContactIntent.putExtra("ChatRoomID", chatRoomID);
+            pickContactIntent.putExtra("onlymembers", true);
+            startActivityForResult(pickContactIntent, REMOVE_USER);
+
+
+            // Change email, password, etc.
+        } else if(id == R.id.nav_setting) {
+            Intent intent = new Intent(getApplicationContext(), UpdateProfileActivity.class);
+            intent.putExtra("ChatRoomID", chatRoomID);
+            startActivity(intent);
+        }else if(id == R.id.nav_logout) {
+
+            FirebaseAuth.getInstance().signOut();
+
+            // displays a list of members
+        }
+
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mFirebaseAuth.removeAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
+    }
 }
