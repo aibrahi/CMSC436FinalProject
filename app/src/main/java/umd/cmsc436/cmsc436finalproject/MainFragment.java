@@ -147,32 +147,22 @@ public class MainFragment extends Fragment{
 
                     // if the user is in a chat group already send him/her to the chat
 
-                    if(chatRoom.getMembers().containsKey(mUser.getUid())){
-
-                        // the user has been found in a group
-                        found = true;
-
-                        // Create the intent to send the user to their chat room
-                        createStoryIntent = new Intent(getActivity(), UsersChatRoomActivity.class);
-                        createStoryIntent.putExtra("ChatRoomNAME", chatRoom.getChatRoomName());
-                        createStoryIntent.putExtra("ChatRoomID", data.getKey());
-                    }
 
                 }
-                Log.d("USSERR FOR-->", found.toString());
-
-                if(found) {
-                    //   dismiss the dialog
-                    progress.dismiss();
-                    mChatRoomDatabaseReference.removeEventListener(mMembersListener);
-
-                    // Send the user to their chat room
-                    startActivity(createStoryIntent);
-                }else {
+//                Log.d("USSERR FOR-->", found.toString());
+//
+//                if(found) {
+//                    //   dismiss the dialog
+//                    progress.dismiss();
+//                    mChatRoomDatabaseReference.removeEventListener(mMembersListener);
+//
+//                    // Send the user to their chat room
+//                    startActivity(createStoryIntent);
+//                }else {
 
                     // Once the database changes make appropriate changes
                     updateUI();
-                }
+//                }
                 // ...
             }
 
@@ -270,10 +260,6 @@ public class MainFragment extends Fragment{
     private void onSignedInInitialize(String username, FirebaseUser user) {
         mUsername = username;
         mUser = user;
-
-        // Add the username to the database
-        mUsernameDatabaseReference = mFirebaseDatabase.getReference().child("Users");
-        mUsernameDatabaseReference.child(user.getUid()).setValue(mUsername);
 
     }
 

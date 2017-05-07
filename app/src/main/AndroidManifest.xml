@@ -2,13 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="umd.cmsc436.cmsc436finalproject" >
 
+    <uses-feature android:name="android.hardware.camera2"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar" >
-        <activity android:name=".FragmentViewer" >
+        <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -16,11 +19,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".FragmentViewer" >
+        </activity>
+
         <activity android:name=".UsersChatRoomActivity">
         </activity>
 
-        <activity android:name=".ListOfUsersActivity">
-        </activity>
+        <activity android:name=".UpdateProfileActivity"></activity>
+        <activity android:name=".ListOfUsersActivity"></activity>
 
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".BillActivity"></activity>
