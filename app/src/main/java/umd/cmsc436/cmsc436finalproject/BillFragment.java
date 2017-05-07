@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -258,8 +259,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             if (chatRoom.getMembers().containsKey(user.getUid())){
                                 hasChatRoom = true;
                                 //System.out.println(chatRoom.getChatRoomName());
+
                                 for (String a: chatRoom.getMembers().keySet()){
                                     if (a != null) {
+                                        Log.d("MEMBERS--->", a);
                                         chatroom_users.add(a);
                                     }
                                 }
@@ -286,7 +289,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
-                    user_map.put(data.getKey(), data.getValue());
+                    umd.cmsc436.cmsc436finalproject.User user = data.getValue(umd.cmsc436.cmsc436finalproject.User.class);
+
+                    user_map.put(user.getDisplayName(), user);
                 }
 
 
@@ -296,6 +301,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                     TableRow new_row = new TableRow(getActivity());
                     TextView user_textview = new TextView(getActivity());
+
                     user_textview.setText((String) user_map.get(a));
                     //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
