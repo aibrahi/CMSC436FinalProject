@@ -142,6 +142,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 double running_total = 0;
                 int number_of_paid = 0;
                 TextView paid_text;
+                HashMap<String, String> paid_map = current_bill.getPaid();
 
                 //iterates through the table to see if each user has an amount listed for them
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
@@ -152,8 +153,35 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         TableRow curr_row = (TableRow) table_row;
                         TextView user_name = (TextView) curr_row.getChildAt(0);
                         EditText bill_amount = (EditText) curr_row.getChildAt(1);
+
+                        if (user_name.getText().toString().equals(user.getDisplayName())) {
+                            Switch user_paid_switch = (Switch) curr_row.getChildAt(2);
+                            if (user_paid_switch.isChecked()) {
+                                //user has paid
+                                System.out.println("yeah u right");
+                            }
+                        }
+
                         if (user_name.getText().toString().equals(user.getDisplayName())) {
                             paid_text = (TextView) curr_row.getChildAt(3);
+
+
+                            if (paid_map != null) {
+                                //user is already inside the paidmap
+                                if (paid_map.containsKey(user.getUid())) {
+
+                                    paid_map.remove(user.getUid());
+                                    paid_map.put(user.getUid(), paid_text.getText().toString());
+                                    //user is not in the paid map
+                                } else {
+                                    paid_map.put(user.getUid(), paid_text.getText().toString());
+                                }
+                            } else {
+                                paid_map = new HashMap<String, String>();
+                                paid_map.put(user.getUid(), paid_text.getText().toString());
+                            }
+
+
                         } else {
                             paid_text = (TextView) curr_row.getChildAt(2);
 
@@ -170,13 +198,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         } else {
                             running_total += Double.parseDouble(bill_amount.getText().toString());
                         }
-                        if (user_name.getText().toString().equals(user.getDisplayName())) {
-                            Switch user_paid_switch = (Switch) curr_row.getChildAt(2);
-                            if (user_paid_switch.isChecked()) {
-                                //user has paid
-                                System.out.println("yeah u right");
-                            }
-                        }
+
                     }
                 }
 
@@ -190,6 +212,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     }
 
                     current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
+                    current_bill.setPaid(paid_map);
 
                     if (number_of_paid == total_members) {
                         current_bill.setStatus("PAID");
@@ -299,6 +322,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
 
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                HashMap<String, String> paid_map = current_bill.getPaid();
+
                 for (String a: chatroom_users) {
                     //user_map.get(a);
 
@@ -322,7 +347,17 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     if (a.equals(user.getUid())) {
                         Switch paid_switch = new Switch(getActivity());
                         final TextView paid_textview = new TextView(getActivity());
-                        paid_textview.setText(R.string.unpaid_label);
+
+                        if (paid_map == null) {
+                            paid_textview.setText("Unpaid");
+                        } else {
+                            paid_textview.setText(paid_map.get(a));
+                        }
+
+                        if (paid_textview.getText().toString().equals("Paid")) {
+                            paid_switch.setChecked(true);
+                        }
+
                         paid_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
                             @Override
@@ -344,7 +379,14 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     } else {
                         //otherwise, for other users, only show their status of paid or unpaid
                         TextView paid_textview = new TextView(getActivity());
-                        paid_textview.setText(R.string.unpaid_label);
+
+                        if (paid_map != null && paid_map.get(a) != null) {
+                            paid_textview.setText(paid_map.get(a));
+                        } else {
+                            paid_textview.setText("Unpaid");
+                        }
+
+
                         new_row.addView(paid_textview);
                     }
 
