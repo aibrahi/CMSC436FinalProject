@@ -1,6 +1,5 @@
 package umd.cmsc436.cmsc436finalproject;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -145,7 +144,7 @@ public class SplashScreen extends AppCompatActivity {
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
-                                    .setLogo(R.drawable.untitled)
+                                    .setLogo(R.drawable.roomie)
                                     .setTheme(R.style.FullscreenTheme)
                                     .setIsSmartLockEnabled(false)
                                     .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
