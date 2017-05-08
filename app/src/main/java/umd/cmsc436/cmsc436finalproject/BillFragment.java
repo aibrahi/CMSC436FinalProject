@@ -240,7 +240,6 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
 
                     if(bill_id.equals("")) {
-                        current_bill.setOwner(cmsc436_user);
                         mBillsDatabaseReference.push().setValue(current_bill);
                     } else
                         mBillsDatabaseReference.child(bill_id).setValue(current_bill);
@@ -397,7 +396,11 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         if (paid_map == null) {
                             paid_textview.setText("Unpaid");
                         } else {
-                            paid_textview.setText(paid_map.get(a));
+                            if (paid_map.get(a) == null) {
+                                paid_textview.setText("Unpaid");
+                            } else {
+                                paid_textview.setText(paid_map.get(a));
+                            }
                         }
 
                         if (paid_textview.getText().toString().equals("Paid")) {
