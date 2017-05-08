@@ -19,11 +19,11 @@
             tools:text="Description" />
 
         <TextView
-            android:id="@+id/list_bill_payment"
+            android:id="@+id/list_bill_user_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Payment" />
+            tools:text="User Status" />
 
         <TextView
             android:id="@+id/list_bill_status"
@@ -33,7 +33,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_weight="1"
-            tools:text="Status" />
+            tools:text="Bill Status" />
 
     </LinearLayout>
 

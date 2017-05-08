@@ -71,7 +71,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                     bills.add(abill);
                     billkeys.add(data.getKey());
                 }
-                updateUI();
+                updateUI();//send notification about new bills
             }
 
             @Override
@@ -147,6 +147,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         private Bill bill;
         TextView description;
+        TextView user_status;
         TextView status;
         String key;
 
@@ -155,6 +156,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             super(v);
             v.setOnClickListener(this);
             description = (TextView) v.findViewById(R.id.list_bill_desc);
+            user_status = (TextView) v.findViewById(R.id.list_bill_user_status);
             status = (TextView) v.findViewById(R.id.list_bill_status);
         }
 
@@ -162,7 +164,14 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             bill = b;
             this.key = key;
             description.setText(bill.getDescription());
-            status.setText(bill.getStatus());
+            if((bill.getPaid().get(user.getUid())).equals("Paid"))
+                user_status.setText("You have paid!");
+            else if((bill.getPaid().get(user.getUid())).equals("Unpaid"))
+                user_status.setText("You have not paid!");
+            if(bill.getStatus().equals("PAID"))
+                status.setText("Bill in progress!");
+            else if (bill.getStatus().equals("PENDING"))
+                status.setText("Bill is finished!");
         }
 
         @Override
