@@ -57,6 +57,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ValueEventListener billlistener;
     private EditText billname;
     private EditText billtotal;
+    private ArrayList<String> removed_users = new ArrayList<String>();
 
     private String curr_user_id;
 
@@ -128,6 +129,11 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         Button cancel_button = (Button) inflated_view.findViewById(R.id.bill_cancel_button);
         cancel_button.setOnClickListener(this);
 
+        Button remove_button = (Button) inflated_view.findViewById(R.id.bill_remove_button);
+        remove_button.setOnClickListener(this);
+
+        Button close_button = (Button) inflated_view.findViewById(R.id.bill_close_button);
+        close_button.setOnClickListener(this);
 
 
 
@@ -140,6 +146,33 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             case R.id.bill_cancel_button:
                 getActivity().finish();
                 break;
+            case R.id.bill_remove_button:
+                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                for (int index = 0; index < users_bill_table.getChildCount(); index++) {
+                    View table_row = users_bill_table.getChildAt(index);
+                    if (table_row instanceof TableRow) {
+                        TableRow user_row = (TableRow) table_row;
+                        Button remove_button = (Button) user_row.getChildAt(0);
+                        remove_button.setVisibility(View.VISIBLE);
+                    }
+                }
+                Button close_button = (Button) inflated_view.findViewById(R.id.bill_close_button);
+                close_button.setVisibility(View.VISIBLE);
+                break;
+            case R.id.bill_close_button:
+                TableLayout users_bill_table3 = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                for (int index = 0; index < users_bill_table3.getChildCount(); index++) {
+                    View table_row = users_bill_table3.getChildAt(index);
+                    if (table_row instanceof TableRow) {
+                        TableRow user_row = (TableRow) table_row;
+                        Button remove_button = (Button) user_row.getChildAt(0);
+                        remove_button.setVisibility(View.GONE);
+                    }
+                }
+
+                Button close_button2 = (Button) inflated_view.findViewById(R.id.bill_close_button);
+                close_button2.setVisibility(View.GONE);
+                break;
             case R.id.bill_save_button:
 
                 EditText total_edittext = (EditText) inflated_view.findViewById(R.id.total_edittext);
@@ -148,6 +181,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 TextView paid_text;
                 HashMap<String, String> paid_map = current_bill.getPaid();
                 HashMap<String, Double> payments = current_bill.getPayments();
+                ArrayList<String> ignored = current_bill.getIgnored();
 
                 if (payments == null) {
                     payments = new HashMap<String, Double>();
@@ -157,27 +191,43 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     paid_map = new HashMap<String, String>();
                 }
 
+                if (ignored == null) {
+                    ignored = new ArrayList<String>();
+                }
+
                 //iterates through the table to see if each user has an amount listed for them
-                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
-                int total_members = users_bill_table.getChildCount();
-                for (int index = 0; index < users_bill_table.getChildCount(); index++) {
-                    View table_row = users_bill_table.getChildAt(index);
+
+                for (String user_id: removed_users) {
+                    if (!ignored.contains(user_id)) {
+                        ignored.add(user_id);
+                        payments.remove(user_id);
+                        paid_map.remove(user_id);
+                    }
+                }
+
+                TableLayout users_bill_table2 = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                int total_members = users_bill_table2.getChildCount();
+                for (int index = 0; index < users_bill_table2.getChildCount(); index++) {
+                    View table_row = users_bill_table2.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow curr_row = (TableRow) table_row;
-                        TextView user_id = (TextView) curr_row.getChildAt(0);
-                        TextView user_name = (TextView) curr_row.getChildAt(1);
-                        EditText bill_amount = (EditText) curr_row.getChildAt(2);
+                        TextView user_id = (TextView) curr_row.getChildAt(1);
+                        TextView user_name = (TextView) curr_row.getChildAt(2);
+                        EditText bill_amount = (EditText) curr_row.getChildAt(3);
 
-                        if (user_name.getText().toString().equals(user.getDisplayName())) {
-                            Switch user_paid_switch = (Switch) curr_row.getChildAt(3);
-                            if (user_paid_switch.isChecked()) {
-                                //user has paid
-                                System.out.println("yeah u right");
+                        //if the user is not in the ignore list
+                        if (!ignored.contains(user_id.getText().toString())) {
+
+                            if (user_name.getText().toString().equals(user.getDisplayName())) {
+                                Switch user_paid_switch = (Switch) curr_row.getChildAt(4);
+                                if (user_paid_switch.isChecked()) {
+                                    //user has paid
+                                    System.out.println("yeah u right");
+                                }
                             }
-                        }
 
-                        if (user_name.getText().toString().equals(user.getDisplayName())) {
-                            paid_text = (TextView) curr_row.getChildAt(4);
+                            if (user_name.getText().toString().equals(user.getDisplayName())) {
+                                paid_text = (TextView) curr_row.getChildAt(5);
 
                                 //user is already inside the paidmap
                                 if (paid_map.containsKey(user.getUid())) {
@@ -188,33 +238,30 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                 } else {
                                     paid_map.put(user.getUid(), paid_text.getText().toString());
                                 }
-                        }
-
-
-                         else {
-                            paid_text = (TextView) curr_row.getChildAt(3);
-
-                        }
-
-                        if (paid_text.getText().toString().equals("Paid")) {
-                            number_of_paid++;
-                        }
-
-                        if (bill_amount.getText().toString().isEmpty()) {
-                            AlertDialog empty_bill_amount = create_dialog_box("Empty bill amount for " + user_name.getText(), "Please re-check the money values for: " + user_name.getText());
-                            empty_bill_amount.show();
-                            break;
-                        } else {
-
-                            if (payments.containsKey(user_id)) {
-                                payments.remove(user_id);
-                                payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
                             } else {
-                                payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
-                            }
-                            running_total += Double.parseDouble(bill_amount.getText().toString());
-                        }
+                                paid_text = (TextView) curr_row.getChildAt(4);
 
+                            }
+
+                            if (paid_text.getText().toString().equals("Paid")) {
+                                number_of_paid++;
+                            }
+
+                            if (bill_amount.getText().toString().isEmpty()) {
+                                AlertDialog empty_bill_amount = create_dialog_box("Empty bill amount for " + user_name.getText(), "Please re-check the money values for: " + user_name.getText());
+                                empty_bill_amount.show();
+                                break;
+                            } else {
+
+                                if (payments.containsKey(user_id)) {
+                                    payments.remove(user_id);
+                                    payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
+                                } else {
+                                    payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
+                                }
+                                running_total += Double.parseDouble(bill_amount.getText().toString());
+                            }
+                        }
                     }
                 }
 
@@ -230,6 +277,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
                     current_bill.setPaid(paid_map);
                     current_bill.setPayments(payments);
+                    current_bill.setIgnored(ignored);
 
                     if (number_of_paid == total_members) {
                         current_bill.setStatus("PAID");
@@ -348,9 +396,15 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 HashMap<String, String> paid_map = current_bill.getPaid();
                 HashMap<String, Double> payments = current_bill.getPayments();
+                ArrayList<String> ignored = current_bill.getIgnored();
+                Button remove_button = (Button) inflated_view.findViewById(R.id.bill_remove_button);
 
                 if (payments == null) {
                     payments = new HashMap<String, Double>();
+                }
+
+                if (ignored == null) {
+                    ignored = new ArrayList<String>();
                 }
 
 
@@ -358,90 +412,119 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     //user_map.get(a);
 
                     //System.out.println("????" + user_map.get(a) + "####" + a);
+                    if (!ignored.contains(a)) {
 
-                    TableRow new_row = new TableRow(getActivity());
-                    TextView user_textview = new TextView(getActivity());
-                    TextView user_id_textview = new TextView(getActivity());
-                    user_id_textview.setText((String) a);
+                        final TableRow new_row = new TableRow(getActivity());
+                        TextView user_textview = new TextView(getActivity());
+                        TextView user_id_textview = new TextView(getActivity());
+                        Button remove_user = new Button(getActivity());
 
-                    user_textview.setText((String) user_map.get(a));
-                    user_id_textview.setVisibility(View.GONE);
-                    //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
+                        //final ArrayList<String> removed_users = new ArrayList<String>();
 
-                    EditText bill_edittext = new EditText(getActivity());
-                    bill_edittext.setHint("1000.00");
-                    bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        remove_user.setVisibility(View.GONE);
+                        remove_user.setBackgroundResource(android.R.drawable.ic_menu_close_clear_cancel);
+                        remove_user.setOnClickListener(
+                                new View.OnClickListener(){
+                                    public void onClick(View v) {
+                                        //remove button gone means it is really gone
+                                        //if (remove_button.getVisibility() != View.GONE) {
+                                        TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+                                        for (int index = 0; index < users_bill_table.getChildCount(); index++) {
+                                            View table_row = users_bill_table.getChildAt(index);
+                                            if (table_row == new_row) {
+                                                TableRow user_row = (TableRow) new_row;
+                                                TextView user_id = (TextView) user_row.getChildAt(1);
+                                                removed_users.add(user_id.getText().toString());
+                                                users_bill_table.removeView(user_row);
+                                            }
+                                        }
+                                        //food_table.removeView(new_row);
+                                        //}
+                                    }
+                                });
+                        user_id_textview.setText((String) a);
 
-                    if (payments.containsKey(a)) {
-                        bill_edittext.setText(String.valueOf(payments.get(a)));
-                    } else {
+                        user_textview.setText((String) user_map.get(a));
+                        user_id_textview.setVisibility(View.GONE);
+                        //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
-                    }
+                        EditText bill_edittext = new EditText(getActivity());
+                        bill_edittext.setHint("1000.00");
+                        bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                    if (!current_bill.getOwner().getUid().equals(curr_user_id)) {
-                        //System.out.println("what:" + current_bill.getOwner().getUid() + ":huh:" + curr_user_id);
-                        bill_edittext.setEnabled(false);
-                    }
-                    //bill_edittext.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
-
-                    new_row.addView(user_id_textview);
-                    new_row.addView(user_textview);
-                    new_row.addView(bill_edittext);
-
-                    //if this is the current user, then we can allow him to say if he paid or is unpaid
-                    if (a.equals(user.getUid())) {
-                        Switch paid_switch = new Switch(getActivity());
-                        final TextView paid_textview = new TextView(getActivity());
-
-                        if (paid_map == null) {
-                            paid_textview.setText("Unpaid");
+                        if (payments.containsKey(a)) {
+                            bill_edittext.setText(String.valueOf(payments.get(a)));
                         } else {
-                            if (paid_map.get(a) == null) {
+
+                        }
+
+                        if (!current_bill.getOwner().getUid().equals(curr_user_id)) {
+                            //System.out.println("what:" + current_bill.getOwner().getUid() + ":huh:" + curr_user_id);
+                            bill_edittext.setFocusable(false);
+                            remove_button.setEnabled(false);
+
+                        }
+                        //bill_edittext.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
+
+                        new_row.addView(remove_user);
+                        new_row.addView(user_id_textview);
+                        new_row.addView(user_textview);
+                        new_row.addView(bill_edittext);
+
+                        //if this is the current user, then we can allow him to say if he paid or is unpaid
+                        if (a.equals(user.getUid())) {
+                            Switch paid_switch = new Switch(getActivity());
+                            final TextView paid_textview = new TextView(getActivity());
+
+                            if (paid_map == null) {
                                 paid_textview.setText("Unpaid");
                             } else {
-                                paid_textview.setText(paid_map.get(a));
-                            }
-                        }
-
-                        if (paid_textview.getText().toString().equals("Paid")) {
-                            paid_switch.setChecked(true);
-                        }
-
-                        paid_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                                //switch is toggled to paid
-                                if (isChecked) {
-                                    paid_textview.setText(R.string.paid_label);
+                                if (paid_map.get(a) == null) {
+                                    paid_textview.setText("Unpaid");
                                 } else {
-                                    paid_textview.setText(R.string.unpaid_label);
+                                    paid_textview.setText(paid_map.get(a));
+                                }
+                            }
+
+                            if (paid_textview.getText().toString().equals("Paid")) {
+                                paid_switch.setChecked(true);
+                            }
+
+                            paid_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                @Override
+                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                    //switch is toggled to paid
+                                    if (isChecked) {
+                                        paid_textview.setText(R.string.paid_label);
+                                    } else {
+                                        paid_textview.setText(R.string.unpaid_label);
+                                    }
+
                                 }
 
+                            });
+
+                            new_row.addView(paid_switch);
+                            new_row.addView(paid_textview);
+                        } else {
+                            //otherwise, for other users, only show their status of paid or unpaid
+                            TextView paid_textview = new TextView(getActivity());
+
+                            if (paid_map != null && paid_map.get(a) != null) {
+                                paid_textview.setText(paid_map.get(a));
+                            } else {
+                                paid_textview.setText("Unpaid");
                             }
 
-                        });
 
-                        new_row.addView(paid_switch);
-                        new_row.addView(paid_textview);
-                    } else {
-                        //otherwise, for other users, only show their status of paid or unpaid
-                        TextView paid_textview = new TextView(getActivity());
-
-                        if (paid_map != null && paid_map.get(a) != null) {
-                            paid_textview.setText(paid_map.get(a));
-                        } else {
-                            paid_textview.setText("Unpaid");
+                            new_row.addView(paid_textview);
                         }
 
-
-                        new_row.addView(paid_textview);
+                        users_bill_table.addView(new_row);
                     }
-
-                    users_bill_table.addView(new_row);
                 }
-
             }
 
             @Override

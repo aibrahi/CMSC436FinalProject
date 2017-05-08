@@ -55,6 +55,18 @@
             android:text="@string/cancel_label"
             android:id="@+id/bill_cancel_button"/>
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_label"
+            android:id="@+id/bill_remove_button"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close_label"
+            android:id="@+id/bill_close_button"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
 

@@ -1,6 +1,8 @@
 package umd.cmsc436.cmsc436finalproject.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import umd.cmsc436.cmsc436finalproject.User;
@@ -16,6 +18,7 @@ public class Bill implements Serializable {
     private Double total;
     private HashMap<String, Double> payments;
     private HashMap<String, String> paid;
+    private ArrayList<String> ignored;
     private User owner;
 
     public Bill(){
@@ -69,6 +72,14 @@ public class Bill implements Serializable {
     }
 
     public HashMap<String, String> getPaid() {return this.paid;}
+
+    public void setIgnored(ArrayList<String> map) {
+        ignored = map;
+    }
+
+    public ArrayList<String> getIgnored() {
+        return this.ignored;
+    }
 
     public void setOwner(User user) {
         owner = user;
