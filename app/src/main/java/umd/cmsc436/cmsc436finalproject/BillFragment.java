@@ -45,6 +45,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private DatabaseReference mDatabase;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser user;
+    private umd.cmsc436.cmsc436finalproject.User cmsc436_user;
     private boolean hasChatRoom = false;
     private ArrayList<String> chatroom_users = new ArrayList<String>();
     private HashMap<String, Object> user_map = new HashMap<String, Object>();
@@ -56,6 +57,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ValueEventListener billlistener;
     private EditText billname;
     private EditText billtotal;
+
+    private String curr_user_id;
 
 
 
@@ -91,6 +94,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             }
         };
 
+
         //create_refs();
         //create_users_ref();
     }
@@ -107,7 +111,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             // user is signed in
             System.out.println("Display name:" + user.getDisplayName());
             System.out.println("User ID:" + user.getUid());
-
+            curr_user_id = user.getUid();
         }
 
 
@@ -143,6 +147,15 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 int number_of_paid = 0;
                 TextView paid_text;
                 HashMap<String, String> paid_map = current_bill.getPaid();
+                HashMap<String, Double> payments = current_bill.getPayments();
+
+                if (payments == null) {
+                    payments = new HashMap<String, Double>();
+                }
+
+                if (paid_map == null) {
+                    paid_map = new HashMap<String, String>();
+                }
 
                 //iterates through the table to see if each user has an amount listed for them
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
@@ -151,11 +164,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow curr_row = (TableRow) table_row;
-                        TextView user_name = (TextView) curr_row.getChildAt(0);
-                        EditText bill_amount = (EditText) curr_row.getChildAt(1);
+                        TextView user_id = (TextView) curr_row.getChildAt(0);
+                        TextView user_name = (TextView) curr_row.getChildAt(1);
+                        EditText bill_amount = (EditText) curr_row.getChildAt(2);
 
                         if (user_name.getText().toString().equals(user.getDisplayName())) {
-                            Switch user_paid_switch = (Switch) curr_row.getChildAt(2);
+                            Switch user_paid_switch = (Switch) curr_row.getChildAt(3);
                             if (user_paid_switch.isChecked()) {
                                 //user has paid
                                 System.out.println("yeah u right");
@@ -163,10 +177,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         }
 
                         if (user_name.getText().toString().equals(user.getDisplayName())) {
-                            paid_text = (TextView) curr_row.getChildAt(3);
+                            paid_text = (TextView) curr_row.getChildAt(4);
 
-
-                            if (paid_map != null) {
                                 //user is already inside the paidmap
                                 if (paid_map.containsKey(user.getUid())) {
 
@@ -176,14 +188,11 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                 } else {
                                     paid_map.put(user.getUid(), paid_text.getText().toString());
                                 }
-                            } else {
-                                paid_map = new HashMap<String, String>();
-                                paid_map.put(user.getUid(), paid_text.getText().toString());
-                            }
+                        }
 
 
-                        } else {
-                            paid_text = (TextView) curr_row.getChildAt(2);
+                         else {
+                            paid_text = (TextView) curr_row.getChildAt(3);
 
                         }
 
@@ -196,6 +205,13 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             empty_bill_amount.show();
                             break;
                         } else {
+
+                            if (payments.containsKey(user_id)) {
+                                payments.remove(user_id);
+                                payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
+                            } else {
+                                payments.put(user_id.getText().toString(), Double.parseDouble(bill_amount.getText().toString()));
+                            }
                             running_total += Double.parseDouble(bill_amount.getText().toString());
                         }
 
@@ -213,6 +229,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                     current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
                     current_bill.setPaid(paid_map);
+                    current_bill.setPayments(payments);
 
                     if (number_of_paid == total_members) {
                         current_bill.setStatus("PAID");
@@ -222,9 +239,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                     current_bill.setTotal(Double.parseDouble(((EditText)inflated_view.findViewById(R.id.total_edittext)).getText().toString()));
 
-                    if(bill_id.equals(""))
+                    if(bill_id.equals("")) {
+                        current_bill.setOwner(cmsc436_user);
                         mBillsDatabaseReference.push().setValue(current_bill);
-                    else
+                    } else
                         mBillsDatabaseReference.child(bill_id).setValue(current_bill);
                     getActivity().finish();
 
@@ -316,6 +334,13 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
                     umd.cmsc436.cmsc436finalproject.User user = data.getValue(umd.cmsc436.cmsc436finalproject.User.class);
+                    cmsc436_user = user;
+
+                    if (cmsc436_user.getUid().equals(curr_user_id)) {
+                        if (current_bill.getOwner() == null) {
+                            current_bill.setOwner(cmsc436_user);
+                        }
+                    }
 
                     user_map.put(user.getUid(), user.getDisplayName());
                 }
@@ -323,6 +348,12 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 HashMap<String, String> paid_map = current_bill.getPaid();
+                HashMap<String, Double> payments = current_bill.getPayments();
+
+                if (payments == null) {
+                    payments = new HashMap<String, Double>();
+                }
+
 
                 for (String a: chatroom_users) {
                     //user_map.get(a);
@@ -331,15 +362,30 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                     TableRow new_row = new TableRow(getActivity());
                     TextView user_textview = new TextView(getActivity());
+                    TextView user_id_textview = new TextView(getActivity());
+                    user_id_textview.setText((String) a);
 
                     user_textview.setText((String) user_map.get(a));
+                    user_id_textview.setVisibility(View.GONE);
                     //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
                     EditText bill_edittext = new EditText(getActivity());
                     bill_edittext.setHint("1000.00");
                     bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                    if (payments.containsKey(a)) {
+                        bill_edittext.setText(String.valueOf(payments.get(a)));
+                    } else {
+
+                    }
+
+                    if (!current_bill.getOwner().getUid().equals(curr_user_id)) {
+                        //System.out.println("what:" + current_bill.getOwner().getUid() + ":huh:" + curr_user_id);
+                        bill_edittext.setEnabled(false);
+                    }
                     //bill_edittext.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
+                    new_row.addView(user_id_textview);
                     new_row.addView(user_textview);
                     new_row.addView(bill_edittext);
 

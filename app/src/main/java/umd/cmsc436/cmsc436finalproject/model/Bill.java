@@ -3,6 +3,8 @@ package umd.cmsc436.cmsc436finalproject.model;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import umd.cmsc436.cmsc436finalproject.User;
+
 /**
  * Created by Vincent Ly on 4/25/2017.
  */
@@ -14,6 +16,7 @@ public class Bill implements Serializable {
     private Double total;
     private HashMap<String, Double> payments;
     private HashMap<String, String> paid;
+    private User owner;
 
     public Bill(){
 
@@ -66,5 +69,14 @@ public class Bill implements Serializable {
     }
 
     public HashMap<String, String> getPaid() {return this.paid;}
+
+    public void setOwner(User user) {
+        owner = user;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
 
 }
