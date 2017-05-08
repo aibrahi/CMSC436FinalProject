@@ -31,15 +31,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1" />
+            android:layout_weight="2" />
 
         <Button
             android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom"
             android:enabled="false"
-            android:text="send"/>
+            android:text="send"
+            android:textColor="@color/white"
+            android:background="@drawable/buttonshape"
+            android:layout_weight="0"
+            />
+
 
     </LinearLayout>
 

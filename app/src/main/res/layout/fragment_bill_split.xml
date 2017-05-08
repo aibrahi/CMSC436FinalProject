@@ -7,19 +7,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="5dp">
 
         <Button
             android:id="@+id/add_bill"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:text="Add Bill" />
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"
+            android:text="Add Bill"
+            android:layout_marginBottom="10dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bill_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:clipToPadding="false">
 
         </android.support.v7.widget.RecyclerView>
 

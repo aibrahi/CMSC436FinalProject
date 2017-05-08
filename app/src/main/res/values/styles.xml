@@ -23,7 +23,7 @@
     <!-- Firebase UI application theme. -->
     <style name="FullscreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--<item name="android:background">@color/white</item>-->
-        <item name="android:windowBackground">@color/com_facebook_blue</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="android:actionBarStyle">@style/FirebaseAuthActionBarStyle</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowActionBar">false</item>
@@ -35,11 +35,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:textColor">@color/orange</item>
-        <item name="colorButtonNormal">@color/orange</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
         <item name="android:textColorHint">@color/colorPrimary</item>
         <item name="colorControlNormal">@color/colorPrimary</item>
-        <item name="colorControlActivated">@color/orange</item>
+        <item name="colorControlActivated">@color/white</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
         <!--<item name="android:colorButtonNormal">@color/white</item>-->
         <!-- <item name="textColor">@color/colorTitle</item>-->
@@ -50,7 +50,7 @@
     </style>
 
     <style name="FirebaseUI.Button" parent="@style/FullscreenTheme">
-        <item name="android:background">@color/orange</item>
+        <item name="android:background">@color/colorAccent</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_gravity">right</item>
         <item name="android:layout_height">36dp</item>
@@ -76,21 +76,21 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColorHint">@color/orange</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="FirebaseUI.Text.TextInputLayout" >
-        <item name="android:textColorHint">@color/orange</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="FirebaseUI.Text.BodyTextNoColor" parent="FirebaseUI.Text.T08">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">16dp</item>
-        <item name="android:textColorHint">@color/orange</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="FirebaseUI.Text.ErrorText" parent="FirebaseUI.Text.T12">
@@ -102,32 +102,32 @@
     <style name="FirebaseUI.EditText.EmailField">
         <item name="android:hint">@string/email_hint</item>
         <item name="android:inputType">textEmailAddress</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="FirebaseUI.EditText.Fir">
         <item name="android:hint">@string/email_hint</item>
         <item name="android:inputType">textEmailAddress</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 
     <style name="FirebaseUI.EditText.PasswordField">
-        <item name="android:textColor">@color/orange</item>
-        <item name="android:textColorHint">@color/orange</item>
-        <item name="colorControlActivated">@color/orange</item>
-        <item name="colorControlHighlight">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
         <item name="android:inputType">textPassword</item>
         <item name="android:hint">@string/password_hint</item>
     </style>
 
     <style name="FirebaseUI.Text.HintText">
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="FirebaseUI.Text.BodyText">
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -140,8 +140,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">16dp</item>
-        <item name="android:textColor">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="FirebaseUI.Button.AccountChooser.EmailButton">
+        <item name="android:drawableLeft">@drawable/ic_mail_white_24dp</item>
+        <item name="android:background">@color/colorAccent</item>
+        <item name="android:textColor">#ffffff</item>
     </style>
 
 

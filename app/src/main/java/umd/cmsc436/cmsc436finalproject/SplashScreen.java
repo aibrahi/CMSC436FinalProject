@@ -145,7 +145,7 @@ public class SplashScreen extends AppCompatActivity {
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
-                                    .setLogo(R.drawable.umd)
+                                    .setLogo(R.drawable.untitled)
                                     .setTheme(R.style.FullscreenTheme)
                                     .setIsSmartLockEnabled(false)
                                     .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),

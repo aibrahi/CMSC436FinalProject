@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -360,8 +361,20 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     //System.out.println("????" + user_map.get(a) + "####" + a);
 
                     TableRow new_row = new TableRow(getActivity());
+                    TableLayout.LayoutParams layoutRow = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+                    layoutRow.setMargins(30, 20, 30,0);
+
+
+                    new_row.setLayoutParams(layoutRow);
+
                     TextView user_textview = new TextView(getActivity());
+                    user_textview.setGravity(Gravity.LEFT);
+
+
+//
+
                     TextView user_id_textview = new TextView(getActivity());
+
                     user_id_textview.setText((String) a);
 
                     user_textview.setText((String) user_map.get(a));
@@ -369,6 +382,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     //user_textview.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
 
                     EditText bill_edittext = new EditText(getActivity());
+
                     bill_edittext.setHint("1000.00");
                     bill_edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
 

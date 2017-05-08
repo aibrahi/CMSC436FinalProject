@@ -353,10 +353,10 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             if (resultCode == RESULT_OK) {
 
                 // Get new user ID
-                String newuser = data.getExtras().getString("SelectedUser");
+                String selectedUser = data.getExtras().getString("SelectedUser");
 
                 // Add the user as a members to the chat room
-                mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(newuser).removeValue();
+                mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(selectedUser).removeValue();
 
             }
         }
