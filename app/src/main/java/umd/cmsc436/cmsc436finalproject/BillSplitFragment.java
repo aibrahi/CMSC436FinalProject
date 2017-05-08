@@ -168,9 +168,9 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                 user_status.setText("You have not paid!");
             else if((bill.getPaid().get(user.getUid())).equals("Paid"))
                 user_status.setText("You have paid!");
-            if(bill.getStatus().equals("PAID"))
+            if(bill.getStatus().equals("PENDING"))
                 status.setText("Bill in progress!");
-            else if (bill.getStatus().equals("PENDING"))
+            else if (bill.getStatus().equals("PAID"))
                 status.setText("Bill is finished!");
         }
 
