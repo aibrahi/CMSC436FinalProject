@@ -258,12 +258,15 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                             if (chatRoom.getMembers().containsKey(user.getUid())){
                                 hasChatRoom = true;
+
+                                //System.out.println("helloooooo");
                                 //System.out.println(chatRoom.getChatRoomName());
 
                                 for (String a: chatRoom.getMembers().keySet()){
                                     if (a != null) {
                                         Log.d("MEMBERS--->", a);
                                         chatroom_users.add(a);
+                                        //System.out.println("lololaoaoaoa" + a);
                                     }
                                 }
 
@@ -291,13 +294,15 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
                     umd.cmsc436.cmsc436finalproject.User user = data.getValue(umd.cmsc436.cmsc436finalproject.User.class);
 
-                    user_map.put(user.getDisplayName(), user);
+                    user_map.put(user.getUid(), user.getDisplayName());
                 }
 
 
                 TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (String a: chatroom_users) {
                     //user_map.get(a);
+
+                    //System.out.println("????" + user_map.get(a) + "####" + a);
 
                     TableRow new_row = new TableRow(getActivity());
                     TextView user_textview = new TextView(getActivity());
