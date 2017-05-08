@@ -93,4 +93,6 @@
     <string name="paid_label">Paid</string>
     <string name="unpaid_label">Unpaid</string>
     <string name="incorrect_dialog_label">Incorrect total amount</string>
+    <string name="remove_label">Remove</string>
+    <string name="close_label">Close</string>
 </resources>
