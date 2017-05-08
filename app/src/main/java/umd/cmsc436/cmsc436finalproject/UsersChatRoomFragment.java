@@ -21,9 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import com.firebase.ui.database.FirebaseListAdapter;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,7 +61,7 @@ public class UsersChatRoomFragment extends Fragment {
     private Button mSendButton;
     private ProgressBar mProgressBar;
     private ListView mMessageListView;
-    private MessageAdapter mMessageAdapter;
+    private FirebaseListAdapter mMessageAdapter;
     private ChildEventListener mChildEventListener;
     private String chatRoomID;
     private String chatRoomNAME;
@@ -118,8 +120,39 @@ public class UsersChatRoomFragment extends Fragment {
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         // Initialize message ListView and its adapter
-        List<Messages> friendlyMessages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(getActivity(), R.layout.userschatroom_fragment, friendlyMessages);
+
+         mMessageAdapter = new FirebaseListAdapter<Messages>(getActivity(), Messages.class, R.layout.item_message, mMessagesDatabaseReference.child("messages"))  {
+
+            @Override
+            protected void populateView(View v, Messages message, int position) {
+                TextView messageTextView = (TextView) v.findViewById(R.id.messageTextView);
+                TextView authorTextView = (TextView) v.findViewById(R.id.nameTextView);
+
+                messageTextView.setText(message.getText());
+                authorTextView.setText(message.getName());
+
+                // create a new layout to the message TextView
+                LinearLayout.LayoutParams messageXML = (LinearLayout.LayoutParams) messageTextView.getLayoutParams();
+                LinearLayout.LayoutParams nameXML = (LinearLayout.LayoutParams) authorTextView.getLayoutParams();
+
+                // if the message is mine, keep the message to the left
+                if(message.getUid().equals(mUserId)) {
+                    messageXML.gravity = Gravity.LEFT;
+                    nameXML.gravity = Gravity.LEFT;
+
+                }
+
+                // else keep the message to the right
+                else {
+                    messageXML.gravity = Gravity.RIGHT;
+                    nameXML.gravity = Gravity.RIGHT;
+                }
+
+                // create a new layout to the message TextView
+                messageTextView.setLayoutParams(messageXML);
+                authorTextView.setLayoutParams(nameXML);
+            }
+        };
         mMessageListView.setAdapter(mMessageAdapter);
 
         // Initialize references to views and check the status of the user
@@ -181,96 +214,16 @@ public class UsersChatRoomFragment extends Fragment {
         return view;
     }
 
-
-
-    public class MessageAdapter extends ArrayAdapter<Messages> {
-        public MessageAdapter(Context context, int resource, List<Messages> objects) {
-            super(context, resource, objects);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            Messages message = getItem(position);
-
-            if (convertView == null) {
-                convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
-            }
-
-            TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
-            TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
-
-            messageTextView.setVisibility(View.VISIBLE);
-            messageTextView.setText(message.getText());
-            authorTextView.setText(message.getName());
-
-            // create a new layout to the message TextView
-            LinearLayout.LayoutParams messageXML = (LinearLayout.LayoutParams) messageTextView.getLayoutParams();
-            LinearLayout.LayoutParams nameXML = (LinearLayout.LayoutParams) authorTextView.getLayoutParams();
-
-            // if the message is mine, keep the message to the left
-            if(message.getUid().equals(mUserId)) {
-                messageXML.gravity = Gravity.LEFT;
-                nameXML.gravity = Gravity.LEFT;
-
-            }
-
-            // else keep the message to the right
-            else {
-                messageXML.gravity = Gravity.RIGHT;
-                nameXML.gravity = Gravity.RIGHT;
-            }
-
-            // create a new layout to the message TextView
-            messageTextView.setLayoutParams(messageXML);
-            authorTextView.setLayoutParams(nameXML);
-
-            return convertView;
-        }
-    }
-
     // Clean the adapters and signout the user
     private void onSignedOutClean() {
         mUsername = ANONYMOUS;
-        mMessageAdapter.clear();
-        if(mChildEventListener != null){
-
-            // Stops reading from Firebase
-            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
-        }
+        mMessageAdapter.cleanup();
     }
 
     // Initialize user and get all the messages
     private void onSignedInInitialize(String username, String userID) {
         mUsername = username;
         mUserId = userID;
-
-        if(mChildEventListener == null){
-
-            // Reads from Firebase database and displays messages
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Messages messages = dataSnapshot.getValue(Messages.class);
-                    mMessageAdapter.add(messages);
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-            mMessagesDatabaseReference.child("messages").addChildEventListener(mChildEventListener);
-        }
-
     }
 
     @Override
@@ -293,17 +246,13 @@ public class UsersChatRoomFragment extends Fragment {
 
     }
 
+
+
     @Override
     public void onPause() {
         super.onPause();
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
-        if(mChildEventListener != null){
-
-            // Stops reading from Firebase
-            mMessagesDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
-        }
-        mMessageAdapter.clear();
+        mMessageAdapter.cleanup();
     }
 
 
