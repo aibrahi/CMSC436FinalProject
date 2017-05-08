@@ -87,7 +87,6 @@ public class UsersChatRoomFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         chatRoomID = getArguments().getString(ARG_CHATROOM_ID);
         chatRoomNAME = getArguments().getString(ARG_CHATROOM_NAME);
@@ -137,7 +136,7 @@ public class UsersChatRoomFragment extends Fragment {
                 }else{
                     // user is signed out
                     onSignedOutClean();
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    Intent intent = new Intent(getActivity(), SplashScreen.class);
                     startActivity(intent);
                 }
             }
@@ -293,34 +292,6 @@ public class UsersChatRoomFragment extends Fragment {
         }
 
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.logout:
-
-                // sign out
-
-                FirebaseAuth.getInstance().signOut();
-
-//                AuthUI.getInstance().signOut(this);
-                return true;
-
-            case R.id.add_user:
-
-                // create a new intent to list all the users in the database and return the selected user
-                Intent pickContactIntent = new Intent(getActivity(), ListOfUsersActivity.class);
-//                pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
-                startActivityForResult(pickContactIntent, NEW_USER);
-
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     @Override
     public void onPause() {
