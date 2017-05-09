@@ -99,4 +99,6 @@
     <string name="no_due_date_set_label">No due date set</string>
     <string name="calendar_label">Calendar</string>
     <string name="owner_label">Owner: </string>
+    <string name="bill_due_soon_label">Bill due soon</string>
+    <string name="bill_due_soon_content">One of your bills is due soon!</string>
 </resources>

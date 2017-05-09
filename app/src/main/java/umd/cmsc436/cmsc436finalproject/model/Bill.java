@@ -26,6 +26,7 @@ public class Bill implements Serializable {
     private int year = -1;
     private int month = -1;
     private int day = -1;
+    //private Calendar date;
 
 
     public Bill(){
@@ -120,10 +121,15 @@ public class Bill implements Serializable {
         return day;
     }
 
-//    public void setDate(){
+//    public void setDate(int year, int month, int day){
+//        date = Calendar.getInstance();
 //        date.set(year, month, day);
 //    }
 //
+//    public long getDate() {
+//        return date.getTimeInMillis();
+//    }
+
 
     public String getDateToString() {
         return month + "/" + day + "/" + year;
