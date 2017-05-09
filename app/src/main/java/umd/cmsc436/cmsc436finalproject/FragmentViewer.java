@@ -221,13 +221,13 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
     @Override
     public boolean onTabSelected(int position, boolean wasSelected) {
 
-
+        if(bottomNavigation.getCurrentItem() == position)
+            return true;
         //show fragment
         switch(position) {
             /* navigate to chatroom */
 
             case 0:
-
                 System.out.println("case 0");
 
                 UsersChatRoomFragment mainFragment = new UsersChatRoomFragment();
