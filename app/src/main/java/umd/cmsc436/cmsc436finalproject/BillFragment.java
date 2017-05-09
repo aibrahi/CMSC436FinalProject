@@ -294,7 +294,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     }
 
                     TextView calendar_date = (TextView) inflated_view.findViewById(R.id.calendar_date);
-                    if (!calendar_date.getText().toString().equals(R.string.no_due_date_set_label)) {
+                    if (!calendar_date.getText().toString().equals(getString(R.string.no_due_date_set_label))) {
                         String[] calendar_values = calendar_date.getText().toString().split("/");
                         current_bill.setMonth(Integer.parseInt(calendar_values[0]));
                         current_bill.setDay(Integer.parseInt(calendar_values[1]));

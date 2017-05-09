@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import umd.cmsc436.cmsc436finalproject.model.Bill;
@@ -171,6 +172,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         TextView description;
         TextView user_status;
         TextView status;
+        TextView date;
         String key;
 
 
@@ -180,6 +182,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             description = (TextView) v.findViewById(R.id.list_bill_desc);
             user_status = (TextView) v.findViewById(R.id.list_bill_user_status);
             status = (TextView) v.findViewById(R.id.list_bill_status);
+            date = (TextView) v.findViewById(R.id.list_bill_date);
         }
 
         public void bindBill(Bill b, String key) {
@@ -194,6 +197,10 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                 status.setText("Bill in progress!");
             else if (bill.getStatus().equals("PAID"))
                 status.setText("Bill is finished!");
+            if(bill.getYear() == -1 || bill.getMonth() == -1 || bill.getDay() == -1)
+                date.setText("Date: None");
+            else
+                date.setText("Date: " + bill.getMonth() + "/" + bill.getDay() + "/" + bill.getYear());
         }
 
         @Override
