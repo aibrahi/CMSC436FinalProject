@@ -22,6 +22,7 @@ public class ChatRoom {
 
     private HashMap<String, String> members;
     private String chatRoomName;
+    private String id;
 
 
     public ChatRoom(){
@@ -56,6 +57,12 @@ public class ChatRoom {
     }
 
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 }
 

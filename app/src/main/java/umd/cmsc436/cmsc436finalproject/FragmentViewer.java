@@ -1,10 +1,12 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -75,15 +78,15 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         setContentView(R.layout.activity_fragment_viewer);
 
         Intent intent = getIntent();
-        if (intent.getStringExtra("ChatRoomID") == null){
+        if (intent.getStringExtra("chatRoomID") == null){
             Log.d("***DEBUG****", "Intent was null");
     }else {
             Log.d("**** DEBUG ***", "Intent OK");
         }
 //        String MANEUVER_ID  = intent.getStringExtra("selection"); //Exception points to this line
 //        Log.d("*** DEBUG", rec + " " + MANEUVER_ID);
-        chatRoomID = intent.getStringExtra("ChatRoomID");
-        chatRoomName = intent.getStringExtra("ChatRoomNAME");
+        chatRoomID = intent.getStringExtra("chatRoomID");
+        chatRoomName = intent.getStringExtra("chatRoomName");
 //        Log.d("USSERR -->", intent.getStringExtra("ChatRoomID"));
 
 
@@ -97,6 +100,10 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        this.setTitle(chatRoomName);
+
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerLayout = navigationView.getHeaderView(0);
@@ -191,6 +198,8 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         //set properties
         bottomNavigation.setDefaultBackgroundColor(Color.parseColor("#FEFEFE"));
 
+        bottomNavigation.setCurrentItem(0);
+
         //set current item
 //        if (prev_class != null) {
 //            switch (prev_class) {
@@ -216,7 +225,9 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         //show fragment
         switch(position) {
             /* navigate to chatroom */
+
             case 0:
+
                 System.out.println("case 0");
 
                 UsersChatRoomFragment mainFragment = new UsersChatRoomFragment();
@@ -282,6 +293,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
                 //       .replace(R.id.content_id,dietFragment)
                 //        .commit();
                 break;
+
         }
         return true;
     }

@@ -17,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,6 +95,8 @@ public class UsersChatRoomFragment extends Fragment {
         chatRoomID = getArguments().getString(ARG_CHATROOM_ID);
         chatRoomNAME = getArguments().getString(ARG_CHATROOM_NAME);
 
+        // Hide keyboard
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
     }
 
@@ -106,8 +110,6 @@ public class UsersChatRoomFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID);
-
-        getActivity().setTitle(chatRoomNAME);
 
         // Initialize references to views
         mMessageEditText = (EditText) view.findViewById(R.id.messageEditText);
