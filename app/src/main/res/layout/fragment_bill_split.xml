@@ -10,15 +10,34 @@
         android:orientation="vertical"
         android:layout_marginTop="5dp">
 
-        <Button
-            android:id="@+id/add_bill"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:background="@drawable/buttonshape"
-            android:text="Add Bill"
-            android:layout_marginBottom="10dp"/>
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/add_bill"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:text="Add Bill"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/remove_bill"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:text="Remove Bills"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bill_recycler_view"

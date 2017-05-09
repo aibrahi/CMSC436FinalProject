@@ -57,6 +57,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
     private ArrayList<Bill> bills;
     private ArrayList<String> billkeys;
     private boolean first;
+    private boolean deleting;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
         bills = new ArrayList<Bill>();
         billkeys = new ArrayList<String>();
         first = true;
+        deleting = false;
 
         billlistener = new ValueEventListener() {
             @Override
@@ -119,7 +121,6 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                         chatRoomID = data.getKey();
                         mBillsDatabaseReference = mFireBaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("bills");
                         mBillsDatabaseReference.addValueEventListener(billlistener);
-                        System.out.println(chatRoom.getChatRoomName());
                         mChatroomDatabaseReference.removeEventListener(chatlistener);
                         break;
                     }
@@ -148,6 +149,19 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             public void onClick(View view) {
                 Intent billfrag = BillActivity.newIntent(getActivity(), "");
                 startActivity(billfrag);
+            }
+        });
+        ((Button)view.findViewById(R.id.remove_bill)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!deleting) {
+                    deleting = true;
+                    ((Button)view.findViewById(R.id.remove_bill)).setText("Finish");
+                }
+                else {
+                    deleting = false;
+                    ((Button)view.findViewById(R.id.remove_bill)).setText("Remove bills");
+                }
             }
         });
 
@@ -210,8 +224,13 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onClick(View v) {
-            Intent billfrag = BillActivity.newIntent(getActivity(), key);
-            startActivity(billfrag);
+            if(!deleting) {
+                Intent billfrag = BillActivity.newIntent(getActivity(), key);
+                startActivity(billfrag);
+            }
+            else {
+                mBillsDatabaseReference.child(key).removeValue();
+            }
         }
     }
 
