@@ -2,6 +2,7 @@ package umd.cmsc436.cmsc436finalproject;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -42,6 +43,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
     private static final int REQUEST_CODE_CREATE_BILL = 1;
     private static final int NOTIFICATION_BILL_ID = 2;
+    private static final int APP_REQUEST = 3;
     private RecyclerView billRecyclerView;
     private FirebaseDatabase mFireBaseDatabase;
     private FirebaseAuth mFirebaseAuth;
@@ -83,12 +85,14 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                 if(first)
                     first = false;
                 else if(bills.size() > sz) {
+                    Intent appIntent = new Intent(getActivity(), SplashScreen.class);
+                    PendingIntent aIntent = PendingIntent.getActivity(getActivity(), APP_REQUEST, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                     Notification.Builder nb = new Notification.Builder(getActivity().getApplicationContext())
                             .setTicker("Roomie")
                             .setSmallIcon(android.R.drawable.ic_menu_compass)
                             .setContentTitle("Roomie")
                             .setContentText("There are new bills!")
-                            //.setContentIntent(sIntent)
+                            .setContentIntent(aIntent)
                             .setAutoCancel(true);
 
                     NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
