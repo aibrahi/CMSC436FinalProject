@@ -81,7 +81,6 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                 if(first)
                     first = false;
                 else if(bills.size() > sz) {
-                    Toast.makeText(getActivity(), "New bills added.", Toast.LENGTH_SHORT).show();
                     Notification.Builder nb = new Notification.Builder(getActivity().getApplicationContext())
                             .setTicker("Roomie")
                             .setSmallIcon(android.R.drawable.ic_menu_compass)
