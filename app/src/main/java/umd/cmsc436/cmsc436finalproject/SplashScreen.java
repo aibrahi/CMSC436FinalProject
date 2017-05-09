@@ -127,6 +127,7 @@ public class SplashScreen extends AppCompatActivity {
                                 // Initialize progress bar
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                 startActivity(intent);
+                                finish();
                             }
 
                         }
@@ -179,5 +180,13 @@ public class SplashScreen extends AppCompatActivity {
         super.onPause();
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
         found = false;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        finish();
     }
 }
