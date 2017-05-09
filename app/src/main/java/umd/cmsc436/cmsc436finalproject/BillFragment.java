@@ -1,9 +1,12 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -31,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import umd.cmsc436.cmsc436finalproject.model.Bill;
@@ -57,6 +62,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private ValueEventListener billlistener;
     private EditText billname;
     private EditText billtotal;
+    private TextView due_date;
     private ArrayList<String> removed_users = new ArrayList<String>();
 
     private String curr_user_id;
@@ -83,6 +89,13 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         current_bill = data.getValue(Bill.class);
                         billname.setText(current_bill.getDescription());
                         billtotal.setText(current_bill.getTotal().toString());
+                        if (current_bill.getYear() == -1) {
+                            System.out.println("really" + current_bill.getDay());
+                            due_date.setText(R.string.no_due_date_set_label);
+                        } else {
+                            //due_date.setText(current_bill.getMonth() + "/" + current_bill.getDay() + "/" + current_bill.getYear());
+                            due_date.setText(current_bill.getDate().toString());
+                        }
                         mBillsDatabaseReference.removeEventListener(billlistener);
                         break;
                     }
@@ -121,6 +134,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         billname = (EditText)inflated_view.findViewById(R.id.bill_name);
         billtotal = (EditText)inflated_view.findViewById(R.id.total_edittext);
 
+        due_date = (TextView) inflated_view.findViewById(R.id.calendar_date);
+
+
         create_refs();
 
         Button save_button = (Button) inflated_view.findViewById(R.id.bill_save_button);
@@ -135,6 +151,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         Button close_button = (Button) inflated_view.findViewById(R.id.bill_close_button);
         close_button.setOnClickListener(this);
 
+        Button calendar_button = (Button) inflated_view.findViewById(R.id.calendar_button);
+        calendar_button.setOnClickListener(this);
+
 
 
         return inflated_view;
@@ -142,12 +161,17 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
     @Override
     public void onClick(View v) {
+        TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
+        Button close_button = (Button) inflated_view.findViewById(R.id.bill_close_button);
         switch(v.getId()) {
+            case R.id.calendar_button:
+                DialogFragment calendarFragment = new DatePickerFragment();
+                calendarFragment.show(getFragmentManager(), "CalendarFragment");
+                break;
             case R.id.bill_cancel_button:
                 getActivity().finish();
                 break;
             case R.id.bill_remove_button:
-                TableLayout users_bill_table = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
                 for (int index = 0; index < users_bill_table.getChildCount(); index++) {
                     View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
@@ -156,25 +180,20 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         remove_button.setVisibility(View.VISIBLE);
                     }
                 }
-                Button close_button = (Button) inflated_view.findViewById(R.id.bill_close_button);
                 close_button.setVisibility(View.VISIBLE);
                 break;
             case R.id.bill_close_button:
-                TableLayout users_bill_table3 = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
-                for (int index = 0; index < users_bill_table3.getChildCount(); index++) {
-                    View table_row = users_bill_table3.getChildAt(index);
+                for (int index = 0; index < users_bill_table.getChildCount(); index++) {
+                    View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow user_row = (TableRow) table_row;
                         Button remove_button = (Button) user_row.getChildAt(0);
                         remove_button.setVisibility(View.GONE);
                     }
                 }
-
-                Button close_button2 = (Button) inflated_view.findViewById(R.id.bill_close_button);
-                close_button2.setVisibility(View.GONE);
+                close_button.setVisibility(View.GONE);
                 break;
             case R.id.bill_save_button:
-
                 EditText total_edittext = (EditText) inflated_view.findViewById(R.id.total_edittext);
                 double running_total = 0;
                 int number_of_paid = 0;
@@ -205,10 +224,9 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     }
                 }
 
-                TableLayout users_bill_table2 = (TableLayout) inflated_view.findViewById(R.id.users_bill_table);
-                int total_members = users_bill_table2.getChildCount();
-                for (int index = 0; index < users_bill_table2.getChildCount(); index++) {
-                    View table_row = users_bill_table2.getChildAt(index);
+                int total_members = users_bill_table.getChildCount();
+                for (int index = 0; index < users_bill_table.getChildCount(); index++) {
+                    View table_row = users_bill_table.getChildAt(index);
                     if (table_row instanceof TableRow) {
                         TableRow curr_row = (TableRow) table_row;
                         TextView user_id = (TextView) curr_row.getChildAt(1);
@@ -272,6 +290,15 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         AlertDialog incorrect_total = create_dialog_box("Incorrect Total", "Please re-check values");
                         incorrect_total.show();
                         break;
+                    }
+
+                    TextView calendar_date = (TextView) inflated_view.findViewById(R.id.calendar_date);
+                    if (!calendar_date.getText().toString().equals(R.string.no_due_date_set_label)) {
+                        String[] calendar_values = calendar_date.getText().toString().split("/");
+                        current_bill.setMonth(Integer.parseInt(calendar_values[0]));
+                        current_bill.setDay(Integer.parseInt(calendar_values[1]));
+                        current_bill.setYear(Integer.parseInt(calendar_values[2]));
+                        current_bill.setDate(Integer.parseInt(calendar_values[2]), Integer.parseInt(calendar_values[1]), Integer.parseInt(calendar_values[0]));
                     }
 
                     current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());
@@ -432,7 +459,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                         for (int index = 0; index < users_bill_table.getChildCount(); index++) {
                                             View table_row = users_bill_table.getChildAt(index);
                                             if (table_row == new_row) {
-                                                TableRow user_row = (TableRow) new_row;
+                                                TableRow user_row = new_row;
                                                 TextView user_id = (TextView) user_row.getChildAt(1);
                                                 removed_users.add(user_id.getText().toString());
                                                 users_bill_table.removeView(user_row);
@@ -442,7 +469,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                                         //}
                                     }
                                 });
-                        user_id_textview.setText((String) a);
+                        user_id_textview.setText(a);
 
                         user_textview.setText((String) user_map.get(a));
                         user_id_textview.setVisibility(View.GONE);
@@ -454,8 +481,6 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                         if (payments.containsKey(a)) {
                             bill_edittext.setText(String.valueOf(payments.get(a)));
-                        } else {
-
                         }
 
                         if (!current_bill.getOwner().getUid().equals(curr_user_id)) {
@@ -477,10 +502,10 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             final TextView paid_textview = new TextView(getActivity());
 
                             if (paid_map == null) {
-                                paid_textview.setText("Unpaid");
+                                paid_textview.setText(R.string.unpaid_label);
                             } else {
                                 if (paid_map.get(a) == null) {
-                                    paid_textview.setText("Unpaid");
+                                    paid_textview.setText(R.string.unpaid_label);
                                 } else {
                                     paid_textview.setText(paid_map.get(a));
                                 }
@@ -515,7 +540,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             if (paid_map != null && paid_map.get(a) != null) {
                                 paid_textview.setText(paid_map.get(a));
                             } else {
-                                paid_textview.setText("Unpaid");
+                                paid_textview.setText(R.string.unpaid_label);
                             }
 
 
@@ -540,6 +565,29 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
         BillFragment bf = new BillFragment();
         bf.setArguments(b);
         return bf;
+    }
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            LayoutInflater li = LayoutInflater.from(getContext());
+            TextView calendar_date = (TextView) getActivity().findViewById(R.id.calendar_date);
+            calendar_date.setText((month+1) + "/" + day + "/" + year);
+        }
     }
 
 }

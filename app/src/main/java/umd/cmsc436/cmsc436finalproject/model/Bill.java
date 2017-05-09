@@ -3,6 +3,8 @@ package umd.cmsc436.cmsc436finalproject.model;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import umd.cmsc436.cmsc436finalproject.User;
@@ -20,6 +22,10 @@ public class Bill implements Serializable {
     private HashMap<String, String> paid;
     private ArrayList<String> ignored;
     private User owner;
+    private int year = -1;
+    private int month = -1;
+    private int day = -1;
+    private Calendar date;
 
     public Bill(){
 
@@ -88,6 +94,44 @@ public class Bill implements Serializable {
     public User getOwner() {
         return owner;
     }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setMonth (int month) {
+        this.month = month;
+    }
+
+    public int getMonth(){
+        return month;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDate(){
+        date.set(year, month, day);
+    }
+
+    public void setDate(int year, int month, int day) {
+        date.set(year, month, day);
+    }
+
+    public Calendar getDate() {
+        return date;
+    }
+
+
 
 
 }

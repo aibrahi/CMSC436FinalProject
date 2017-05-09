@@ -95,4 +95,6 @@
     <string name="incorrect_dialog_label">Incorrect total amount</string>
     <string name="remove_label">Remove</string>
     <string name="close_label">Close</string>
+    <string name="due_date_label">Due: </string>
+    <string name="no_due_date_set_label">No due date set</string>
 </resources>
