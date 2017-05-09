@@ -491,8 +491,11 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
 
                         if (!current_bill.getOwner().getUid().equals(curr_user_id)) {
                             //System.out.println("what:" + current_bill.getOwner().getUid() + ":huh:" + curr_user_id);
+                            Button calendar_button = (Button) inflated_view.findViewById(R.id.calendar_button);
+                            calendar_button.setEnabled(false);
                             bill_edittext.setFocusable(false);
                             remove_button.setEnabled(false);
+
 
                         }
                         //bill_edittext.setLayoutParams(new TableRow.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
