@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import umd.cmsc436.cmsc436finalproject.User;
@@ -25,7 +26,7 @@ public class Bill implements Serializable {
     private int year = -1;
     private int month = -1;
     private int day = -1;
-    private Calendar date;
+
 
     public Bill(){
 
@@ -119,16 +120,13 @@ public class Bill implements Serializable {
         return day;
     }
 
-    public void setDate(){
-        date.set(year, month, day);
-    }
+//    public void setDate(){
+//        date.set(year, month, day);
+//    }
+//
 
-    public void setDate(int year, int month, int day) {
-        date.set(year, month, day);
-    }
-
-    public Calendar getDate() {
-        return date;
+    public String getDateToString() {
+        return month + "/" + day + "/" + year;
     }
 
 

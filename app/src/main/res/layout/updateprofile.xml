@@ -110,8 +110,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Change Email btn"
-            android:textStyle="bold" />
+            android:text="Change Email"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"/>
 
 
         <Button
@@ -120,8 +123,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Change Username btn"
-            android:textStyle="bold" />
+            android:text="Change Username"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"/>
 
         <Button
             android:id="@+id/change_password_button"
@@ -129,18 +135,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Change Password btn"
-            android:textStyle="bold" />
+            android:text="Change Password"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"/>
 
 
         <Button
             android:id="@+id/change_picture_button"
             style="?android:textAppearanceSmall"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Change Picture"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         </LinearLayout>
 

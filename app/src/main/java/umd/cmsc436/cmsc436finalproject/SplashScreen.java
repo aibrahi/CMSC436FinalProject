@@ -1,6 +1,5 @@
 package umd.cmsc436.cmsc436finalproject;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -113,9 +112,9 @@ public class SplashScreen extends AppCompatActivity {
 
                                     // Create the intent to send the user to their chat room
                                     Intent createStoryIntent = new Intent(getApplicationContext(), FragmentViewer.class);
-                                    createStoryIntent.putExtra("ChatRoomNAME", chatRoom.getChatRoomName());
+                                    createStoryIntent.putExtra("chatRoomName", chatRoom.getChatRoomName());
 
-                                    createStoryIntent.putExtra("ChatRoomID", data.getKey());
+                                    createStoryIntent.putExtra("chatRoomID", data.getKey());
                                     startActivity(createStoryIntent);
 
                                 }
@@ -145,7 +144,7 @@ public class SplashScreen extends AppCompatActivity {
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
-                                    .setLogo(R.drawable.umd)
+                                    .setLogo(R.drawable.roomie)
                                     .setTheme(R.style.FullscreenTheme)
                                     .setIsSmartLockEnabled(false)
                                     .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),

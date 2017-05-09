@@ -94,7 +94,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             due_date.setText(R.string.no_due_date_set_label);
                         } else {
                             //due_date.setText(current_bill.getMonth() + "/" + current_bill.getDay() + "/" + current_bill.getYear());
-                            due_date.setText(current_bill.getDate().toString());
+                            //due_date.setText(current_bill.getDate().toString());
+                            due_date.setText(current_bill.getDateToString());
                         }
                         mBillsDatabaseReference.removeEventListener(billlistener);
                         break;
@@ -298,7 +299,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                         current_bill.setMonth(Integer.parseInt(calendar_values[0]));
                         current_bill.setDay(Integer.parseInt(calendar_values[1]));
                         current_bill.setYear(Integer.parseInt(calendar_values[2]));
-                        current_bill.setDate(Integer.parseInt(calendar_values[2]), Integer.parseInt(calendar_values[1]), Integer.parseInt(calendar_values[0]));
+                        //current_bill.setDate(Integer.parseInt(calendar_values[2]), Integer.parseInt(calendar_values[1]), Integer.parseInt(calendar_values[0]));
                     }
 
                     current_bill.setDescription(((EditText)inflated_view.findViewById(R.id.bill_name)).getText().toString());

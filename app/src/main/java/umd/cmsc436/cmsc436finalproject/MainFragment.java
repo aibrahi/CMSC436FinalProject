@@ -17,11 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by ahmedinibrahim on 4/27/17.
@@ -76,6 +79,11 @@ public class MainFragment extends Fragment{
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.listofchatrooms_fragment, null);
@@ -103,6 +111,26 @@ public class MainFragment extends Fragment{
         List<ChatRoom> friendlyMessages = new ArrayList<>();
         mChatRoomAdapter = new ChatRoomAdapter(getContext(), R.layout.item_chatrooms, friendlyMessages);
         mChatGroupListView.setAdapter(mChatRoomAdapter);
+
+        mChatGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView v = (TextView) view.findViewById(R.id.chatRoomTextView);
+                ChatRoom chatRoom = (ChatRoom) parent.getItemAtPosition(position);
+                mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoom.getId()).child("members").child(mUser.getUid()).setValue("member");
+                Toast.makeText(getApplicationContext(), "selected Item Name is " + chatRoom.getId(), Toast.LENGTH_SHORT).show();
+
+
+
+
+                Intent createStoryIntent = new Intent(getActivity(), FragmentViewer.class);
+                createStoryIntent.putExtra("chatRoomID", chatRoom.getId());
+                createStoryIntent.putExtra("chatRoomName", chatRoom.getChatRoomName());
+
+                startActivity(createStoryIntent);
+
+            }
+        });
 
         // Initialize references to views and check the status of the user
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -145,25 +173,11 @@ public class MainFragment extends Fragment{
 
                     mChatRoomAdapter.add(chatRoom);
 
-                    // if the user is in a chat group already send him/her to the chat
 
 
                 }
-//                Log.d("USSERR FOR-->", found.toString());
-//
-//                if(found) {
-//                    //   dismiss the dialog
-//                    progress.dismiss();
-//                    mChatRoomDatabaseReference.removeEventListener(mMembersListener);
-//
-//                    // Send the user to their chat room
-//                    startActivity(createStoryIntent);
-//                }else {
 
-                    // Once the database changes make appropriate changes
-                    updateUI();
-//                }
-                // ...
+                updateUI();
             }
 
             @Override
@@ -180,11 +194,7 @@ public class MainFragment extends Fragment{
         return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+
 
 
     private void updateUI() {
@@ -225,10 +235,14 @@ public class MainFragment extends Fragment{
                 chatRoom.setChatRoomName(mNewChatNameText.getText().toString());
 
                 String mGroupId = mChatRoomDatabaseReference.push().getKey();
+
+                chatRoom.setId(mGroupId);
                 mChatRoomDatabaseReference.child(mGroupId).setValue(chatRoom);
 
-                Intent createStoryIntent = new Intent(getActivity(), UsersChatRoomActivity.class);
-                createStoryIntent.putExtra("ChatRoomID", mGroupId);
+                Intent createStoryIntent = new Intent(getActivity(), FragmentViewer.class);
+                createStoryIntent.putExtra("chatRoomID", mGroupId);
+                createStoryIntent.putExtra("chatRoomName", chatRoom.getChatRoomName());
+
                 startActivity(createStoryIntent);
 
 
@@ -261,23 +275,6 @@ public class MainFragment extends Fragment{
         mUsername = username;
         mUser = user;
 
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.logout:
-                // sign out
-                FirebaseAuth.getInstance().signOut();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
     }
 
 
