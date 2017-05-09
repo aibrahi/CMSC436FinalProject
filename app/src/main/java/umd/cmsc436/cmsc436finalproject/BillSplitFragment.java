@@ -1,5 +1,7 @@
 package umd.cmsc436.cmsc436finalproject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,6 +38,7 @@ import static android.app.Activity.RESULT_OK;
 public class BillSplitFragment extends android.support.v4.app.Fragment {
 
     private static final int REQUEST_CODE_CREATE_BILL = 1;
+    private static final int NOTIFICATION_BILL_ID = 2;
     private RecyclerView billRecyclerView;
     private FirebaseDatabase mFireBaseDatabase;
     private FirebaseAuth mFirebaseAuth;
@@ -48,6 +51,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
     private BillAdapter billAdapter;
     private ArrayList<Bill> bills;
     private ArrayList<String> billkeys;
+    private boolean first;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,10 +64,12 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
 
         bills = new ArrayList<Bill>();
         billkeys = new ArrayList<String>();
+        first = true;
 
         billlistener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int sz = bills.size();
                 bills.clear();
                 billkeys.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -71,6 +77,22 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                     bills.add(abill);
                     billkeys.add(data.getKey());
                 }
+                if(first)
+                    first = false;
+                else if(bills.size() > sz) {
+                    Toast.makeText(getActivity().getApplicationContext(), "New bills added.", Toast.LENGTH_SHORT).show();
+                    Notification.Builder nb = new Notification.Builder(getActivity().getApplicationContext())
+                            .setTicker("Roomie")
+                            .setSmallIcon(android.R.drawable.ic_menu_compass)
+                            .setContentTitle("Roomie")
+                            .setContentText("There are new bills!")
+                            //.setContentIntent(sIntent)
+                            .setAutoCancel(true);
+
+                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(NOTIFICATION_BILL_ID, nb.build());
+                }
+
                 updateUI();//send notification about new bills
             }
 
@@ -164,7 +186,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             bill = b;
             this.key = key;
             description.setText(bill.getDescription());
-            if((bill.getPaid().get(user.getUid())) == null || (bill.getPaid().get(user.getUid())).equals("Unpaid"))
+            if(bill.getPaid() == null || (bill.getPaid().get(user.getUid())) == null || (bill.getPaid().get(user.getUid())).equals("Unpaid"))
                 user_status.setText("You have not paid!");
             else if((bill.getPaid().get(user.getUid())).equals("Paid"))
                 user_status.setText("You have paid!");
