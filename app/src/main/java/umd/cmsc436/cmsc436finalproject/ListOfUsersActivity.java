@@ -16,7 +16,8 @@ public class ListOfUsersActivity extends SingleFragmentActivity {
         ArrayList membersList = getIntent().getStringArrayListExtra("ListOfMembers");
         String chatRoomID = getIntent().getStringExtra("ChatRoomID");
         Boolean onlyMembers = getIntent().getBooleanExtra("onlymembers", false);
+        Boolean removeMember = getIntent().getBooleanExtra("removeMember", false);
 
-        return ListOfUsersFragment.newInstance(membersList, chatRoomID, onlyMembers);
+        return ListOfUsersFragment.newInstance(membersList, chatRoomID, onlyMembers, removeMember);
     }
 }

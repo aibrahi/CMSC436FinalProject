@@ -119,7 +119,7 @@ public class MainFragment extends Fragment{
                 TextView v = (TextView) view.findViewById(R.id.chatRoomTextView);
                 ChatRoom chatRoom = (ChatRoom) parent.getItemAtPosition(position);
                 mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoom.getId()).child("members").child(mUser.getUid()).setValue("member");
-                Toast.makeText(getApplicationContext(), "selected Item Name is " + chatRoom.getId(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "selected Item Name is " + chatRoom.getId(), Toast.LENGTH_SHORT).show();
 
 
 
