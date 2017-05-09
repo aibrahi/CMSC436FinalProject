@@ -28,6 +28,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +95,7 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
                     notificationManager.notify(NOTIFICATION_BILL_ID, nb.build());
                 }
 
-                updateUI();//send notification about new bills
+                updateUI();
             }
 
             @Override
@@ -245,6 +247,22 @@ public class BillSplitFragment extends android.support.v4.app.Fragment {
             billRecyclerView.setAdapter(billAdapter);
         }
         else {
+            Collections.sort(bills, new Comparator<Bill>() {
+                @Override
+                public int compare(Bill bill1, Bill bill2) {
+                    if(bill1.getYear() == -1 || bill1.getMonth() == -1 || bill1.getDay() == -1)
+                        return 1;
+                    if(bill2.getYear() == -1 || bill2.getMonth() == -1 || bill2.getDay() == -1)
+                        return -1;
+                    if (bill1.getYear() != bill2.getYear())
+                        return bill1.getYear() - bill2.getYear();
+                    else if (bill1.getMonth() != bill2.getMonth())
+                        return bill1.getMonth() - bill2.getMonth();
+                    else if (bill1.getDay() != bill2.getDay())
+                        return bill1.getDay() - bill2.getDay();
+                    else return 0;
+                }
+            });
             billAdapter.setBills(bills);
             billAdapter.notifyDataSetChanged();
         }
