@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -118,7 +119,7 @@ public class MainFragment extends Fragment{
                 TextView v = (TextView) view.findViewById(R.id.chatRoomTextView);
                 ChatRoom chatRoom = (ChatRoom) parent.getItemAtPosition(position);
                 mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoom.getId()).child("members").child(mUser.getUid()).setValue("member");
-                Toast.makeText(getApplicationContext(), "selected Item Name is " + chatRoom.getId(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "selected Item Name is " + chatRoom.getId(), Toast.LENGTH_SHORT).show();
 
 
 
@@ -246,6 +247,7 @@ public class MainFragment extends Fragment{
                 startActivity(createStoryIntent);
 
 
+
                 // Clear input box
                 mNewChatNameText.setText("");
             }
@@ -343,6 +345,11 @@ public class MainFragment extends Fragment{
             return convertView;
         }
     }
+
+
+
+
+
 
 
 }

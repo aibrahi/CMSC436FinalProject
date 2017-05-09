@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -354,6 +355,8 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
                 // Get new user ID
                 String newuser = data.getExtras().getString("SelectedUser");
 
+                membersList.add(newuser);
+
                 // Add the user as a members to the chat room
                 mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(newuser).setValue("member");
 
@@ -365,8 +368,11 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
 
+
                 // Get new user ID
                 String selectedUser = data.getExtras().getString("SelectedUser");
+
+                membersList.remove(selectedUser);
 
                 // Add the user as a members to the chat room
                 mFirebaseDatabase.getReference().child("ChatRooms").child(chatRoomID).child("members").child(selectedUser).removeValue();
@@ -388,6 +394,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             listofMembersIntent.putExtra("onlymembers", true);
             listofMembersIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
             listofMembersIntent.putExtra("ChatRoomID", chatRoomID);
+            listofMembersIntent.putExtra("removeMember", false);
             startActivity(listofMembersIntent);
 
             // Adds members to the list
@@ -398,6 +405,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
             pickContactIntent.putExtra("ChatRoomID", chatRoomID);
             pickContactIntent.putExtra("onlymembers", false);
+            pickContactIntent.putExtra("removeMember", false);
             startActivityForResult(pickContactIntent, NEW_USER);
 
             // Removes a member from the group
@@ -408,6 +416,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
             pickContactIntent.putStringArrayListExtra("ListOfMembers", (ArrayList<String>) membersList);
             pickContactIntent.putExtra("ChatRoomID", chatRoomID);
             pickContactIntent.putExtra("onlymembers", true);
+            pickContactIntent.putExtra("removeMember", true);
             startActivityForResult(pickContactIntent, REMOVE_USER);
 
 

@@ -63,6 +63,7 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
     private EditText billname;
     private EditText billtotal;
     private TextView due_date;
+    private TextView owner_text;
     private ArrayList<String> removed_users = new ArrayList<String>();
 
     private String curr_user_id;
@@ -97,6 +98,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                             //due_date.setText(current_bill.getDate().toString());
                             due_date.setText(current_bill.getDateToString());
                         }
+                        owner_text = (TextView) inflated_view.findViewById(R.id.owner_field);
+                        owner_text.append(" " + current_bill.getOwner().getDisplayName());
                         mBillsDatabaseReference.removeEventListener(billlistener);
                         break;
                     }
@@ -414,6 +417,8 @@ public class BillFragment extends android.support.v4.app.Fragment implements Vie
                     if (cmsc436_user.getUid().equals(curr_user_id)) {
                         if (current_bill.getOwner() == null) {
                             current_bill.setOwner(cmsc436_user);
+                            TextView owner_textView = (TextView) inflated_view.findViewById(R.id.owner_field);
+                            owner_textView.append(" " + cmsc436_user.getDisplayName());
                         }
                     }
 

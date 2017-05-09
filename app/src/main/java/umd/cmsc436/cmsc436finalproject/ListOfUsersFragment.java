@@ -77,18 +77,20 @@ public class ListOfUsersFragment extends Fragment {
     private ProgressBar mProgressBar;
     private ListView mMessageListView;
     private Boolean onlyMembers;
+    private Boolean removeMember;
     private String chatRoomID;
 
     private FirebaseUser currentUser;
 
     private UsersAdapter adapter;
 
-    public static Fragment newInstance(ArrayList membersList, String chatRoomID, Boolean onlyMembers) {
+    public static Fragment newInstance(ArrayList membersList, String chatRoomID, Boolean onlyMembers, Boolean removeMember) {
 
         Bundle args = new Bundle();
         args.putString("chatRoomID", chatRoomID);
         args.putBoolean("onlyMembers", onlyMembers);
         args.putStringArrayList("membersList", membersList);
+        args.putBoolean("removeMember", removeMember);
 
         ListOfUsersFragment fragment = new ListOfUsersFragment();
         fragment.setArguments(args);
@@ -105,8 +107,7 @@ public class ListOfUsersFragment extends Fragment {
         chatRoomID = getArguments().getString("chatRoomID");
         onlyMembers = getArguments().getBoolean("onlyMembers");
         membersList = getArguments().getStringArrayList("membersList");
-
-
+        removeMember = getArguments().getBoolean("removeMember");
 
     }
 
@@ -168,26 +169,37 @@ public class ListOfUsersFragment extends Fragment {
             }
         });
 
-        if(onlyMembers){
-            mMessageListView.setClickable(false);
-        }else{
+
+        // removing members
+        if(onlyMembers && removeMember){
             mMessageListView.setClickable(true);
 
-            mMessageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    TextView v = (TextView) view.findViewById(R.id.usersTextView);
-                    User user = (User) parent.getItemAtPosition(position);
-                    Toast.makeText(getApplicationContext(), "selected Item Name is " + user.getUid(), Toast.LENGTH_SHORT).show();
-
-                    Intent data = new Intent();
-                    data.putExtra("SelectedUser", user.getUid());
-                    getActivity().setResult(RESULT_OK, data);
-                    getActivity().finish();
-
-                }
-            });
         }
+        // viewing members only
+        else if(onlyMembers && !removeMember){
+            mMessageListView.setClickable(false);
+
+        }
+        // Adding new members
+        else if(!removeMember && !onlyMembers){
+            mMessageListView.setClickable(true);
+
+        }
+
+        mMessageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView v = (TextView) view.findViewById(R.id.usersTextView);
+                User user = (User) parent.getItemAtPosition(position);
+                Toast.makeText(getApplicationContext(), "selected Item Name is " + user.getUid(), Toast.LENGTH_SHORT).show();
+
+                Intent data = new Intent();
+                data.putExtra("SelectedUser", user.getUid());
+                getActivity().setResult(RESULT_OK, data);
+                getActivity().finish();
+
+            }
+        });
 
 
         return view;

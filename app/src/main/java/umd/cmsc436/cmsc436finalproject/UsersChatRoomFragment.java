@@ -97,7 +97,6 @@ public class UsersChatRoomFragment extends Fragment {
 
         // Hide keyboard
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     }
 
     @Override

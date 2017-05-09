@@ -7,18 +7,12 @@
 
     <ImageView
         android:id="@+id/userImage"
-        android:paddingTop="30dp"
-        android:layout_height="350dp"
+        android:layout_height="390dp"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:src="@drawable/roomie"
-        android:foregroundGravity="center">
+        android:src="@drawable/roomie">
     </ImageView>
-
-
-
 
     <ProgressBar
         android:id="@+id/progressUsersBar"
