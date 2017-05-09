@@ -97,4 +97,6 @@
     <string name="close_label">Close</string>
     <string name="due_date_label">Due: </string>
     <string name="no_due_date_set_label">No due date set</string>
+    <string name="calendar_label">Calendar</string>
+    <string name="owner_label">Owner: </string>
 </resources>
