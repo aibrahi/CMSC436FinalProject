@@ -20,7 +20,8 @@
         app:cardCornerRadius="0dp"
         app:cardElevation="2dp"
         app:cardPreventCornerOverlap="false"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp">
 
         <TableLayout
             android:layout_width="wrap_content"
@@ -30,14 +31,7 @@
         </TableLayout>
     </android.support.v7.widget.CardView>
 
-    <!--<android.support.v7.widget.CardView-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:cardCornerRadius="0dp"-->
-        <!--app:cardElevation="2dp"-->
-        <!--app:cardPreventCornerOverlap="false"-->
-        <!--android:layout_marginTop="10dp">-->
+
 
 
         <LinearLayout
@@ -62,8 +56,6 @@
 
 
         </LinearLayout>
-
-    <!--</android.support.v7.widget.CardView>-->
 
 
     <LinearLayout
@@ -95,7 +87,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/remove_label"
-            android:id="@+id/bill_remove_button"/>
+            android:id="@+id/bill_remove_button"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/buttonshape"
+            android:layout_weight="1"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
