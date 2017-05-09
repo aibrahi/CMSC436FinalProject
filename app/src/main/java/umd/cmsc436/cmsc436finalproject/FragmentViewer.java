@@ -73,6 +73,8 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser mUserFb;
 
+    private boolean first_tab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,8 +174,6 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         this.createNavItems();
 
 
-
-
     }
 
     private void createNavItems() {
@@ -199,6 +199,7 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
         //set properties
         bottomNavigation.setDefaultBackgroundColor(Color.parseColor("#FEFEFE"));
 
+        first_tab = true;
         bottomNavigation.setCurrentItem(0);
 
         //set current item
@@ -221,9 +222,9 @@ public class FragmentViewer extends AppCompatActivity implements AHBottomNavigat
 
     @Override
     public boolean onTabSelected(int position, boolean wasSelected) {
-
-        if(bottomNavigation.getCurrentItem() == position)
+        if(!first_tab && bottomNavigation.getCurrentItem() == position)
             return true;
+        first_tab = false;
         //show fragment
         switch(position) {
             /* navigate to chatroom */
