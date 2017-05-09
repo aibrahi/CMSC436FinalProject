@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -246,6 +247,7 @@ public class MainFragment extends Fragment{
                 startActivity(createStoryIntent);
 
 
+
                 // Clear input box
                 mNewChatNameText.setText("");
             }
@@ -343,6 +345,11 @@ public class MainFragment extends Fragment{
             return convertView;
         }
     }
+
+
+
+
+
 
 
 }
